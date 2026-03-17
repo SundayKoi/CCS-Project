@@ -91,3 +91,24 @@ export async function db(table, { method = "GET", body, query = "", headers = {}
   const text = await res.text();
   return text ? JSON.parse(text) : null;
 }
+
+// ── Storage Upload ───────────────────────────────────────
+export async function uploadFile(bucket, path, file) {
+  const token = Auth.getToken() || SUPABASE_ANON_KEY;
+  const url = `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": file.type,
+      "x-upsert": "true",
+    },
+    body: file,
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Upload failed: ${err}`);
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+}

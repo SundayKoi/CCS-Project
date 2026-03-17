@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Auth, db } from "../lib/supabase";
+import { Auth, db, uploadFile } from "../lib/supabase";
 
 // ── Shared Styles ────────────────────────────────────────
 const S = {
@@ -144,6 +144,25 @@ function TeamsTab({ seasons, divisions, toast }) {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" });
   const [editing, setEditing] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const logoFileRef = useRef(null);
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast("Please select an image file", "error"); return; }
+    if (file.size > 2 * 1024 * 1024) { toast("Image must be under 2MB", "error"); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${Date.now()}_${(form.abbreviation || "team").toLowerCase()}.${ext}`;
+      const publicUrl = await uploadFile("team-logos", path, file);
+      setForm(f => ({ ...f, logo_url: publicUrl }));
+      toast("Logo uploaded", "success");
+    } catch (err) { toast(err.message, "error"); }
+    setUploading(false);
+    e.target.value = "";
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -182,7 +201,16 @@ function TeamsTab({ seasons, divisions, toast }) {
           <div style={S.col}><label style={S.label}>Accent Color</label><div style={{ display: "flex", gap: 8, alignItems: "center" }}><input type="color" value={form.color_accent} onChange={e => setForm({ ...form, color_accent: e.target.value })} style={{ width: 40, height: 36, border: "none", background: "transparent", cursor: "pointer" }} /><input style={{ ...S.input, ...S.mono }} value={form.color_accent} onChange={e => setForm({ ...form, color_accent: e.target.value })} /></div></div>
         </div>
         <div style={S.row}>
-          <div style={S.col}><label style={S.label}>Logo URL</label><input style={S.input} placeholder="https://i.imgur.com/logo.png" value={form.logo_url} onChange={e => setForm({ ...form, logo_url: e.target.value })} /></div>
+          <div style={S.col}>
+            <label style={S.label}>Team Logo</label>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input ref={logoFileRef} type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: "none" }} />
+              <button style={{ ...S.btnSecondary, opacity: uploading ? 0.6 : 1 }} onClick={() => logoFileRef.current?.click()} disabled={uploading}>{uploading ? "Uploading..." : "Upload Image"}</button>
+              <span style={{ fontSize: 11, color: "#555" }}>or</span>
+              <input style={{ ...S.input, flex: 1 }} placeholder="Paste image URL..." value={form.logo_url} onChange={e => setForm({ ...form, logo_url: e.target.value })} />
+              {form.logo_url && <button style={{ ...S.btnDanger, padding: "6px 10px", fontSize: 10 }} onClick={() => setForm({ ...form, logo_url: "" })}>Clear</button>}
+            </div>
+          </div>
         </div>
         <div style={S.row}>
           <div style={S.col}><label style={S.label}>Division</label><select style={S.select} value={form.division_id} onChange={e => setForm({ ...form, division_id: e.target.value })}><option value="">No division</option>{divisions.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></div>
