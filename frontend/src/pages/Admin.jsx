@@ -142,7 +142,7 @@ function AdminTabs({ active, setActive }) {
 function TeamsTab({ seasons, divisions, toast }) {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", division_id: "", season_id: "" });
+  const [form, setForm] = useState({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" });
   const [editing, setEditing] = useState(null);
 
   const load = useCallback(async () => {
@@ -155,22 +155,22 @@ function TeamsTab({ seasons, divisions, toast }) {
 
   const save = async () => {
     if (!form.name || !form.abbreviation) { toast("Name and abbreviation required", "error"); return; }
-    const body = { ...form }; if (!body.division_id) body.division_id = null; if (!body.season_id) body.season_id = null;
+    const body = { ...form }; if (!body.division_id) body.division_id = null; if (!body.season_id) body.season_id = null; if (!body.logo_url) body.logo_url = null;
     try {
       if (editing) { await db(`teams?id=eq.${editing}`, { method: "PATCH", body }); toast("Team updated", "success"); }
       else { await db("teams", { method: "POST", body }); toast("Team created", "success"); }
-      setForm({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", division_id: "", season_id: "" }); setEditing(null); load();
+      setForm({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" }); setEditing(null); load();
     } catch (e) { toast(e.message, "error"); }
   };
 
   const del = async (id) => { if (!confirm("Delete this team?")) return; try { await db(`teams?id=eq.${id}`, { method: "DELETE" }); toast("Deleted", "success"); load(); } catch (e) { toast(e.message, "error"); } };
-  const edit = (t) => { setEditing(t.id); setForm({ name: t.name, abbreviation: t.abbreviation, color_primary: t.color_primary || "#6B21A8", color_accent: t.color_accent || "#A855F7", division_id: t.division_id || "", season_id: t.season_id || "" }); };
+  const edit = (t) => { setEditing(t.id); setForm({ name: t.name, abbreviation: t.abbreviation, color_primary: t.color_primary || "#6B21A8", color_accent: t.color_accent || "#A855F7", logo_url: t.logo_url || "", division_id: t.division_id || "", season_id: t.season_id || "" }); };
 
   return (<div>
     <div style={S.card}>
       <div style={S.cardHeader}>
         <span style={S.cardTitle}>{editing ? "EDIT TEAM" : "ADD NEW TEAM"}</span>
-        {editing && <button style={S.btnSecondary} onClick={() => { setEditing(null); setForm({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", division_id: "", season_id: "" }); }}>Cancel</button>}
+        {editing && <button style={S.btnSecondary} onClick={() => { setEditing(null); setForm({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" }); }}>Cancel</button>}
       </div>
       <div style={S.cardBody}>
         <div style={S.row}>
@@ -182,11 +182,14 @@ function TeamsTab({ seasons, divisions, toast }) {
           <div style={S.col}><label style={S.label}>Accent Color</label><div style={{ display: "flex", gap: 8, alignItems: "center" }}><input type="color" value={form.color_accent} onChange={e => setForm({ ...form, color_accent: e.target.value })} style={{ width: 40, height: 36, border: "none", background: "transparent", cursor: "pointer" }} /><input style={{ ...S.input, ...S.mono }} value={form.color_accent} onChange={e => setForm({ ...form, color_accent: e.target.value })} /></div></div>
         </div>
         <div style={S.row}>
+          <div style={S.col}><label style={S.label}>Logo URL</label><input style={S.input} placeholder="https://i.imgur.com/logo.png" value={form.logo_url} onChange={e => setForm({ ...form, logo_url: e.target.value })} /></div>
+        </div>
+        <div style={S.row}>
           <div style={S.col}><label style={S.label}>Division</label><select style={S.select} value={form.division_id} onChange={e => setForm({ ...form, division_id: e.target.value })}><option value="">No division</option>{divisions.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}</select></div>
           <div style={S.col}><label style={S.label}>Season</label><select style={S.select} value={form.season_id} onChange={e => setForm({ ...form, season_id: e.target.value })}><option value="">No season</option>{seasons.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 4 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 8, background: `linear-gradient(135deg, ${form.color_primary}, ${form.color_accent})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "'Oswald', sans-serif", color: "#fff", fontWeight: 600, letterSpacing: 1 }}>{form.abbreviation || "?"}</div>
+          {form.logo_url ? <img src={form.logo_url} alt="Logo" style={{ width: 48, height: 48, borderRadius: 8, objectFit: "contain", background: "#1a1a1a", border: "1px solid #2a2a2a" }} onError={e => { e.target.style.display = "none"; }} /> : <div style={{ width: 48, height: 48, borderRadius: 8, background: `linear-gradient(135deg, ${form.color_primary}, ${form.color_accent})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontFamily: "'Oswald', sans-serif", color: "#fff", fontWeight: 600, letterSpacing: 1 }}>{form.abbreviation || "?"}</div>}
           <button style={S.btnPrimary} onClick={save}>{editing ? "Update Team" : "Add Team"}</button>
         </div>
       </div>
@@ -197,7 +200,7 @@ function TeamsTab({ seasons, divisions, toast }) {
         <table style={S.table}><thead><tr><th style={S.th}></th><th style={S.th}>Name</th><th style={S.th}>Abbr</th><th style={S.th}>Division</th><th style={S.th}>Colors</th><th style={S.th}></th></tr></thead>
           <tbody>{teams.map(t => (
             <tr key={t.id}>
-              <td style={S.td}><div style={{ width: 32, height: 32, borderRadius: 6, background: `linear-gradient(135deg, ${t.color_primary || "#333"}, ${t.color_accent || "#555"})` }} /></td>
+              <td style={S.td}>{t.logo_url ? <img src={t.logo_url} alt={t.abbreviation} style={{ width: 32, height: 32, borderRadius: 6, objectFit: "contain", background: "#1a1a1a" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}<div style={{ width: 32, height: 32, borderRadius: 6, background: `linear-gradient(135deg, ${t.color_primary || "#333"}, ${t.color_accent || "#555"})`, display: t.logo_url ? "none" : "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#fff", fontWeight: 600, fontFamily: "'Oswald', sans-serif" }}>{(t.abbreviation || "?").charAt(0)}</div></td>
               <td style={{ ...S.td, fontFamily: "'Oswald', sans-serif", fontWeight: 500 }}>{t.name}</td>
               <td style={{ ...S.td, ...S.mono }}>{t.abbreviation}</td>
               <td style={S.td}>{t.divisions?.name || <span style={{ color: "#333" }}>—</span>}</td>
