@@ -901,8 +901,8 @@ const RIOT_ROLE_MAP={top:'TOP',jungle:'JUNGLE',mid:'MIDDLE',adc:'BOTTOM',support
 
 async function loadFromSupabase(){
   const hdrs={'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'};
-  // Fetch player_game_stats joined with players, teams, and games
-  const url=SUPABASE_URL+'/rest/v1/player_game_stats?select=*,players(display_name,riot_game_name),teams:team_id(name,abbreviation),games:game_id(riot_match_id,game_duration,game_started_at,blue_team_id,red_team_id,winner_team_id,blue_total_dragons,blue_total_barons,blue_total_heralds,blue_total_towers,red_total_dragons,red_total_barons,red_total_heralds,red_total_towers)&order=created_at.desc&limit=5000';
+  // Fetch player_game_stats joined with players, teams, games → matches → splits → seasons
+  const url=SUPABASE_URL+'/rest/v1/player_game_stats?select=*,players(display_name,riot_game_name),teams:team_id(name,abbreviation),games:game_id(riot_match_id,game_duration,game_started_at,blue_team_id,red_team_id,winner_team_id,blue_total_dragons,blue_total_barons,blue_total_heralds,blue_total_towers,red_total_dragons,red_total_barons,red_total_heralds,red_total_towers,matches:match_id(season_phase,splits:split_id(name,seasons:season_id(name))))&order=created_at.desc&limit=5000';
   const resp=await fetch(url,{headers:hdrs});
   if(!resp.ok)throw new Error('Supabase fetch failed: '+resp.status);
   const data=await resp.json();
@@ -918,6 +918,11 @@ async function loadFromSupabase(){
     const teamBarons=isBlue?(r.games?.blue_total_barons||0):(r.games?.red_total_barons||0);
     const teamHeralds=isBlue?(r.games?.blue_total_heralds||0):(r.games?.red_total_heralds||0);
     const teamTowers=isBlue?(r.games?.blue_total_towers||0):(r.games?.red_total_towers||0);
+    // Season/phase from matches → splits → seasons chain
+    const match=r.games?.matches||null;
+    const splitName=match?.splits?.name||'';
+    const seasonName=match?.splits?.seasons?.name||'';
+    const seasonPhase=match?.season_phase||'Regular';
     return {
       'Summoner Name': r.players?.display_name||'Unknown',
       'Teams': r.teams?.name||'Sub',
@@ -942,6 +947,9 @@ async function loadFromSupabase(){
       'Game Duration (min)': String(gameDurMin.toFixed(1)),
       'Match ID': r.games?.riot_match_id||r.game_id||'',
       'Date': dateStr,
+      'Season': seasonName,
+      'Season Phase': seasonPhase,
+      'Split': splitName,
       'Double Kills': String(r.double_kills||0),
       'Triple Kills': String(r.triple_kills||0),
       'Quadra Kills': String(r.quadra_kills||0),

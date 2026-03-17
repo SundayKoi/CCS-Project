@@ -765,7 +765,7 @@ function ScheduleTab({ toast }) {
   const [teams, setTeams] = useState([]);
   const [splits, setSplits] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1" });
+  const [form, setForm] = useState({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1", season_phase: "Regular" });
   const [editing, setEditing] = useState(null);
 
   const load = useCallback(async () => {
@@ -790,18 +790,19 @@ function ScheduleTab({ toast }) {
       team_red_id: form.team_red_id,
       split_id: form.split_id,
       match_format: form.match_format || "bo1",
+      season_phase: form.season_phase || "Regular",
       status: "scheduled",
       scheduled_at: form.scheduled_at || null,
     };
     try {
       if (editing) { await db(`matches?id=eq.${editing}`, { method: "PATCH", body }); toast("Updated", "success"); }
       else { await db("matches", { method: "POST", body }); toast("Match scheduled", "success"); }
-      setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1" }); setEditing(null); load();
+      setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1", season_phase: "Regular" }); setEditing(null); load();
     } catch (e) { toast(e.message, "error"); }
   };
 
   const del = async (id) => { if (!confirm("Delete this match?")) return; try { await db(`matches?id=eq.${id}`, { method: "DELETE" }); toast("Deleted", "success"); load(); } catch (e) { toast(e.message, "error"); } };
-  const edit = (m) => { setEditing(m.id); setForm({ team_blue_id: m.team_blue_id || "", team_red_id: m.team_red_id || "", split_id: m.split_id || "", scheduled_at: m.scheduled_at ? m.scheduled_at.slice(0, 16) : "", match_format: m.match_format || "bo1" }); };
+  const edit = (m) => { setEditing(m.id); setForm({ team_blue_id: m.team_blue_id || "", team_red_id: m.team_red_id || "", split_id: m.split_id || "", scheduled_at: m.scheduled_at ? m.scheduled_at.slice(0, 16) : "", match_format: m.match_format || "bo1", season_phase: m.season_phase || "Regular" }); };
 
   const statusColor = (s) => s === "completed" ? "#10b981" : s === "live" ? "#ef4444" : "#f59e0b";
   const scheduled = matches.filter(m => m.status === "scheduled");
@@ -811,7 +812,7 @@ function ScheduleTab({ toast }) {
     <div style={S.card}>
       <div style={S.cardHeader}>
         <span style={S.cardTitle}>{editing ? "EDIT MATCH" : "SCHEDULE NEW MATCH"}</span>
-        {editing && <button style={S.btnSecondary} onClick={() => { setEditing(null); setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1" }); }}>Cancel</button>}
+        {editing && <button style={S.btnSecondary} onClick={() => { setEditing(null); setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1", season_phase: "Regular" }); }}>Cancel</button>}
       </div>
       <div style={S.cardBody}>
         <div style={S.row}>
@@ -823,6 +824,7 @@ function ScheduleTab({ toast }) {
           <div style={S.col}><label style={S.label}>Split</label><select style={S.select} value={form.split_id} onChange={e => setForm({ ...form, split_id: e.target.value })}><option value="">Select split...</option>{splits.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
           <div style={S.col}><label style={S.label}>Date & Time</label><input type="datetime-local" style={S.input} value={form.scheduled_at} onChange={e => setForm({ ...form, scheduled_at: e.target.value })} /></div>
           <div style={{ ...S.col, maxWidth: 120 }}><label style={S.label}>Format</label><select style={S.select} value={form.match_format} onChange={e => setForm({ ...form, match_format: e.target.value })}><option value="bo1">Bo1</option><option value="bo3">Bo3</option><option value="bo5">Bo5</option></select></div>
+          <div style={{ ...S.col, maxWidth: 140 }}><label style={S.label}>Phase</label><select style={S.select} value={form.season_phase} onChange={e => setForm({ ...form, season_phase: e.target.value })}><option value="Regular">Regular</option><option value="Playoffs">Playoffs</option></select></div>
         </div>
         <button style={S.btnPrimary} onClick={save}>{editing ? "Update Match" : "Schedule Match"}</button>
       </div>
