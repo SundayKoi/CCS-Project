@@ -120,7 +120,7 @@ function LoginScreen({ onLogin, toast }) {
 
 // ── Tabs ─────────────────────────────────────────────────
 function AdminTabs({ active, setActive }) {
-  const tabs = ["Teams", "Players", "Rosters", "Divisions", "Seasons"];
+  const tabs = ["Teams", "Players", "Rosters", "Schedule", "Divisions", "Seasons"];
   return (
     <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #c2185b", marginBottom: 20, overflowX: "auto", scrollbarWidth: "none" }}>
       {tabs.map(t => (
@@ -727,6 +727,125 @@ function SeasonsTab({ toast, onRefresh }) {
 }
 
 // ══════════════════════════════════════════════════════════
+// SCHEDULE
+// ══════════════════════════════════════════════════════════
+function ScheduleTab({ toast }) {
+  const [matches, setMatches] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [splits, setSplits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1" });
+  const [editing, setEditing] = useState(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [m, t, sp] = await Promise.all([
+        db("matches", { query: "?select=*,team_blue:teams!matches_team_blue_id_fkey(id,name,abbreviation),team_red:teams!matches_team_red_id_fkey(id,name,abbreviation),splits(name)&order=scheduled_at.desc.nullslast,created_at.desc&limit=50" }),
+        db("teams", { query: "?select=id,name,abbreviation&order=name" }),
+        db("splits", { query: "?select=*&order=split_number" }),
+      ]);
+      setMatches(m || []); setTeams(t || []); setSplits(sp || []);
+    } catch (e) { toast(e.message, "error"); }
+    setLoading(false);
+  }, [toast]);
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    if (!form.team_blue_id || !form.team_red_id || !form.split_id) { toast("Both teams and split required", "error"); return; }
+    if (form.team_blue_id === form.team_red_id) { toast("Teams must be different", "error"); return; }
+    const body = {
+      team_blue_id: form.team_blue_id,
+      team_red_id: form.team_red_id,
+      split_id: form.split_id,
+      match_format: form.match_format || "bo1",
+      status: "scheduled",
+      scheduled_at: form.scheduled_at || null,
+    };
+    try {
+      if (editing) { await db(`matches?id=eq.${editing}`, { method: "PATCH", body }); toast("Updated", "success"); }
+      else { await db("matches", { method: "POST", body }); toast("Match scheduled", "success"); }
+      setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1" }); setEditing(null); load();
+    } catch (e) { toast(e.message, "error"); }
+  };
+
+  const del = async (id) => { if (!confirm("Delete this match?")) return; try { await db(`matches?id=eq.${id}`, { method: "DELETE" }); toast("Deleted", "success"); load(); } catch (e) { toast(e.message, "error"); } };
+  const edit = (m) => { setEditing(m.id); setForm({ team_blue_id: m.team_blue_id || "", team_red_id: m.team_red_id || "", split_id: m.split_id || "", scheduled_at: m.scheduled_at ? m.scheduled_at.slice(0, 16) : "", match_format: m.match_format || "bo1" }); };
+
+  const statusColor = (s) => s === "completed" ? "#10b981" : s === "live" ? "#ef4444" : "#f59e0b";
+  const scheduled = matches.filter(m => m.status === "scheduled");
+  const completed = matches.filter(m => m.status === "completed");
+
+  return (<div>
+    <div style={S.card}>
+      <div style={S.cardHeader}>
+        <span style={S.cardTitle}>{editing ? "EDIT MATCH" : "SCHEDULE NEW MATCH"}</span>
+        {editing && <button style={S.btnSecondary} onClick={() => { setEditing(null); setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1" }); }}>Cancel</button>}
+      </div>
+      <div style={S.cardBody}>
+        <div style={S.row}>
+          <div style={S.col}><label style={S.label}>Blue Side</label><select style={S.select} value={form.team_blue_id} onChange={e => setForm({ ...form, team_blue_id: e.target.value })}><option value="">Select team...</option>{teams.map(t => <option key={t.id} value={t.id}>{t.name} ({t.abbreviation})</option>)}</select></div>
+          <div style={{ display: "flex", alignItems: "flex-end", padding: "0 8px 10px", fontSize: 13, color: "#555", fontFamily: "'Oswald', sans-serif" }}>VS</div>
+          <div style={S.col}><label style={S.label}>Red Side</label><select style={S.select} value={form.team_red_id} onChange={e => setForm({ ...form, team_red_id: e.target.value })}><option value="">Select team...</option>{teams.map(t => <option key={t.id} value={t.id}>{t.name} ({t.abbreviation})</option>)}</select></div>
+        </div>
+        <div style={S.row}>
+          <div style={S.col}><label style={S.label}>Split</label><select style={S.select} value={form.split_id} onChange={e => setForm({ ...form, split_id: e.target.value })}><option value="">Select split...</option>{splits.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></div>
+          <div style={S.col}><label style={S.label}>Date & Time</label><input type="datetime-local" style={S.input} value={form.scheduled_at} onChange={e => setForm({ ...form, scheduled_at: e.target.value })} /></div>
+          <div style={{ ...S.col, maxWidth: 120 }}><label style={S.label}>Format</label><select style={S.select} value={form.match_format} onChange={e => setForm({ ...form, match_format: e.target.value })}><option value="bo1">Bo1</option><option value="bo3">Bo3</option><option value="bo5">Bo5</option></select></div>
+        </div>
+        <button style={S.btnPrimary} onClick={save}>{editing ? "Update Match" : "Schedule Match"}</button>
+      </div>
+    </div>
+
+    {/* Upcoming */}
+    <div style={S.card}>
+      <div style={S.cardHeader}><span style={S.cardTitle}>UPCOMING MATCHES ({scheduled.length})</span></div>
+      {scheduled.length === 0 ? <div style={S.empty}>{loading ? "Loading..." : "No upcoming matches."}</div> : (
+        <table style={S.table}>
+          <thead><tr><th style={S.th}>Blue</th><th style={S.th}></th><th style={S.th}>Red</th><th style={S.th}>Split</th><th style={S.th}>Date</th><th style={S.th}>Format</th><th style={S.th}></th></tr></thead>
+          <tbody>{scheduled.map(m => (
+            <tr key={m.id}>
+              <td style={{ ...S.td, fontFamily: "'Oswald', sans-serif", fontWeight: 500, color: "#3b82f6" }}>{m.team_blue?.name || "TBD"}</td>
+              <td style={{ ...S.td, color: "#333", textAlign: "center", fontSize: 11 }}>vs</td>
+              <td style={{ ...S.td, fontFamily: "'Oswald', sans-serif", fontWeight: 500, color: "#ef4444" }}>{m.team_red?.name || "TBD"}</td>
+              <td style={S.td}>{m.splits?.name || "—"}</td>
+              <td style={{ ...S.td, ...S.mono }}>{m.scheduled_at ? new Date(m.scheduled_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "TBD"}</td>
+              <td style={{ ...S.td, ...S.mono }}>{(m.match_format || "bo1").toUpperCase()}</td>
+              <td style={{ ...S.td, textAlign: "right" }}>
+                <button style={{ ...S.btnSecondary, padding: "6px 12px", fontSize: 11, marginRight: 6 }} onClick={() => edit(m)}>Edit</button>
+                <button style={S.btnDanger} onClick={() => del(m.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}</tbody>
+        </table>
+      )}
+    </div>
+
+    {/* Completed */}
+    <div style={S.card}>
+      <div style={S.cardHeader}><span style={S.cardTitle}>COMPLETED MATCHES ({completed.length})</span></div>
+      {completed.length === 0 ? <div style={S.empty}>No completed matches yet.</div> : (
+        <table style={S.table}>
+          <thead><tr><th style={S.th}>Blue</th><th style={S.th}>Score</th><th style={S.th}>Red</th><th style={S.th}>Winner</th><th style={S.th}>Split</th><th style={S.th}>Date</th></tr></thead>
+          <tbody>{completed.map(m => {
+            const bWin = m.winner_team_id === m.team_blue?.id;
+            const rWin = m.winner_team_id === m.team_red?.id;
+            return (<tr key={m.id}>
+              <td style={{ ...S.td, fontFamily: "'Oswald', sans-serif", fontWeight: 500, color: bWin ? "#10b981" : "#888" }}>{m.team_blue?.name || "?"}</td>
+              <td style={{ ...S.td, ...S.mono, textAlign: "center" }}>{m.score_blue ?? 0} - {m.score_red ?? 0}</td>
+              <td style={{ ...S.td, fontFamily: "'Oswald', sans-serif", fontWeight: 500, color: rWin ? "#10b981" : "#888" }}>{m.team_red?.name || "?"}</td>
+              <td style={S.td}><span style={S.badge("#10b981")}>{bWin ? m.team_blue?.abbreviation : rWin ? m.team_red?.abbreviation : "—"}</span></td>
+              <td style={S.td}>{m.splits?.name || "—"}</td>
+              <td style={{ ...S.td, ...S.mono }}>{m.completed_at ? new Date(m.completed_at).toLocaleDateString([], { month: "short", day: "numeric" }) : "—"}</td>
+            </tr>);
+          })}</tbody>
+        </table>
+      )}
+    </div>
+  </div>);
+}
+
+// ══════════════════════════════════════════════════════════
 // MAIN
 // ══════════════════════════════════════════════════════════
 export default function Admin() {
@@ -771,6 +890,7 @@ export default function Admin() {
           {tab === "Teams" && <TeamsTab seasons={seasons} divisions={divisions} toast={toast} />}
           {tab === "Players" && <PlayersTab toast={toast} />}
           {tab === "Rosters" && <RostersTab toast={toast} />}
+          {tab === "Schedule" && <ScheduleTab toast={toast} />}
           {tab === "Divisions" && <DivisionsTab seasons={seasons} toast={toast} onRefresh={loadGlobals} />}
           {tab === "Seasons" && <SeasonsTab toast={toast} onRefresh={loadGlobals} />}
         </div>
