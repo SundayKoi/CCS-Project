@@ -903,9 +903,21 @@ async function loadFromSupabase(){
   const hdrs={'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'};
   // Fetch player_game_stats joined with players, teams, games → matches → splits → seasons
   const url=SUPABASE_URL+'/rest/v1/player_game_stats?select=*,players(display_name,riot_game_name),teams:team_id(name,abbreviation),games:game_id(riot_match_id,game_duration,game_started_at,blue_team_id,red_team_id,winner_team_id,blue_total_dragons,blue_total_barons,blue_total_heralds,blue_total_towers,red_total_dragons,red_total_barons,red_total_heralds,red_total_towers,matches:match_id(season_phase,splits:split_id(name,seasons:season_id(name))))&order=created_at.desc&limit=5000';
-  const resp=await fetch(url,{headers:hdrs});
+  // Also fetch bans separately and index by game_id + team_side
+  const bansUrl=SUPABASE_URL+'/rest/v1/team_bans?select=game_id,team_side,ban_order,champion_name&order=ban_order&limit=5000';
+  const [resp,bansResp]=await Promise.all([fetch(url,{headers:hdrs}),fetch(bansUrl,{headers:hdrs})]);
   if(!resp.ok)throw new Error('Supabase fetch failed: '+resp.status);
   const data=await resp.json();
+  // Build ban lookup: game_id → {blue: [champ1,...], red: [champ1,...]}
+  const banMap={};
+  if(bansResp.ok){
+    const bansData=await bansResp.json();
+    bansData.forEach(function(b){
+      if(!banMap[b.game_id])banMap[b.game_id]={blue:[],red:[]};
+      var side=b.team_side||'blue';
+      banMap[b.game_id][side].push(b.champion_name||'');
+    });
+  }
   // Map to the flat row format the dashboard expects
   return data.map(function(r){
     const isBlue=r.team_id===r.games?.blue_team_id;
@@ -923,6 +935,10 @@ async function loadFromSupabase(){
     const splitName=match?.splits?.name||'';
     const seasonName=match?.splits?.seasons?.name||'';
     const seasonPhase=match?.season_phase||'Regular';
+    // Bans for this game (all 10 bans, 5 per team)
+    const gid=r.game_id;
+    const gameBans=banMap[gid]||{blue:[],red:[]};
+    const allBans=[...gameBans.blue,...gameBans.red];
     return {
       'Summoner Name': r.players?.display_name||'Unknown',
       'Teams': r.teams?.name||'Sub',
@@ -963,6 +979,11 @@ async function loadFromSupabase(){
       'Team Grubs': '0',
       'Largest Killing Spree': String(r.largest_killing_spree||0),
       'Largest Multi Kill': String(r.largest_multi_kill||0),
+      'Ban 1': allBans[0]||'',
+      'Ban 2': allBans[1]||'',
+      'Ban 3': allBans[2]||'',
+      'Ban 4': allBans[3]||'',
+      'Ban 5': allBans[4]||'',
     };
   });
 }
