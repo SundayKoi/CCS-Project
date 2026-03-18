@@ -76,14 +76,14 @@ export function NavBar({ active, setActive, isMobile }: Props) {
       </div>
       {TABS.map(t =>
         t === "Stats" ? (
-          <a key={t} href="/stats.html" className="bg-transparent border-none cursor-pointer py-3.5 px-4 text-text-secondary font-heading text-sm tracking-wider border-b-2 border-b-transparent whitespace-nowrap uppercase no-underline">
+          <a key={t} href="/stats.html" className="bg-transparent cursor-pointer py-3.5 px-4 text-text-secondary font-heading text-sm tracking-wider border-0 border-b-2 border-b-transparent whitespace-nowrap uppercase no-underline">
             Stats
           </a>
         ) : (
           <button
             key={t}
             onClick={() => setActive(t)}
-            className={`bg-transparent border-none cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase ${
+            className={`bg-transparent cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase border-0 ${
               active === t ? "text-text-bright font-bold border-b-2 border-b-accent" : "text-text-secondary font-normal border-b-2 border-b-transparent"
             }`}
           >

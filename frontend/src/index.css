@@ -25,34 +25,22 @@
   --overlay: rgba(0,0,0,0.5);
 }
 
-/* ── Base ── */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { line-height: 1.5; -webkit-text-size-adjust: 100%; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  width: 100%;
-  min-width: 0;
-  transition: background 0.2s, color 0.2s;
+/* ── Base (inside layer so Tailwind utilities can override) ── */
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    width: 100%;
+    transition: background 0.2s, color 0.2s;
+  }
+  #root {
+    width: 100%;
+    min-height: 100vh;
+  }
 }
-#root {
-  width: 100%;
-  max-width: 100%;
-  min-height: 100vh;
-}
-#root > * {
-  width: 100%;
-}
-button, input, select, textarea {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-}
-img, svg { max-width: 100%; height: auto; }
-nav, div, section, main, header, footer { min-width: 0; }
 ::selection { background: var(--accent); color: #fff; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
