@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+/* ── Theme Variables ── */
+[data-theme="dark"] {
+  --bg: #0a0a0a; --bg2: #111; --bg3: #151515; --bg-input: #1a1a1a;
+  --border: #1a1a1a; --border2: #2a2a2a; --border3: #222;
+  --text: #e5e5e5; --text-bright: #fff; --text-secondary: #888;
+  --text-muted: #555; --text-dim: #444; --text-subtle: #333;
+  --accent: #c2185b; --accent-light: rgba(194,24,91,0.12);
+  --green: #10b981; --red: #ef4444; --gold: #ffd700; --blue: #3b82f6;
+  --orange: #f59e0b; --purple: #8b5cf6;
+  --toast-success-bg: #065F46; --toast-error-bg: #991B1B;
+  --overlay: rgba(0,0,0,0.85);
+}
+
+[data-theme="light"] {
+  --bg: #f5f5f5; --bg2: #fff; --bg3: #fafafa; --bg-input: #f0f0f0;
+  --border: #e0e0e0; --border2: #d0d0d0; --border3: #ddd;
+  --text: #1a1a1a; --text-bright: #111; --text-secondary: #666;
+  --text-muted: #888; --text-dim: #aaa; --text-subtle: #ccc;
+  --accent: #c2185b; --accent-light: rgba(194,24,91,0.08);
+  --green: #059669; --red: #dc2626; --gold: #b8860b; --blue: #2563eb;
+  --orange: #d97706; --purple: #7c3aed;
+  --toast-success-bg: #d1fae5; --toast-error-bg: #fee2e2;
+  --overlay: rgba(0,0,0,0.5);
+}
+
+/* ── Base ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Source Sans 3', sans-serif;
+  transition: background 0.2s, color 0.2s;
+}
+::selection { background: var(--accent); color: #fff; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border3); border-radius: 3px; }
+
+/* ── Animations ── */
+@keyframes pulse { 0%, 100% { opacity: 1 } 50% { opacity: 0.3 } }
+
+/* ── Custom Tailwind Theme ── */
+@theme {
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --color-bg-input: var(--bg-input);
+  --color-border: var(--border);
+  --color-border2: var(--border2);
+  --color-border3: var(--border3);
+  --color-text: var(--text);
+  --color-text-bright: var(--text-bright);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-dim: var(--text-dim);
+  --color-text-subtle: var(--text-subtle);
+  --color-accent: var(--accent);
+  --color-accent-light: var(--accent-light);
+  --color-ccs-green: var(--green);
+  --color-ccs-red: var(--red);
+  --color-ccs-gold: var(--gold);
+  --color-ccs-blue: var(--blue);
+  --color-ccs-orange: var(--orange);
+  --color-ccs-purple: var(--purple);
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
