@@ -1,7 +1,7 @@
 """
 Discord Bot Cog — Match Ingestion Trigger
 ==========================================
-Add this cog to your existing InHouseQueue Discord bot
+Add this cog to your existing CCS League Discord bot
 or run it as a standalone bot.
 
 Commands:

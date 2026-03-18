@@ -94,7 +94,7 @@ function LoginScreen({ onLogin, toast }) {
         <div style={{ textAlign: "center", marginBottom: 32, position: "relative" }}>
           <span style={{ fontSize: 36 }}>⚔️</span>
           <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 32, color: "#fff", letterSpacing: 3, marginTop: 8 }}>
-            INHOUSE<span style={S.accent}>LEAGUE</span>
+            CCS<span style={S.accent}>LEAGUE</span>
           </div>
           <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: 12, color: "#555", letterSpacing: 2, marginTop: 4, textTransform: "uppercase" }}>Admin Dashboard</div>
         </div>
@@ -910,7 +910,7 @@ export default function Admin() {
         <div style={S.topBar}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 20 }}>⚔️</span>
-            <span style={S.brand}>INHOUSE<span style={S.accent}>LEAGUE</span></span>
+            <span style={S.brand}>CCS<span style={S.accent}>LEAGUE</span></span>
             <span style={{ ...S.badge("#c2185b"), marginLeft: 8 }}>ADMIN</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>

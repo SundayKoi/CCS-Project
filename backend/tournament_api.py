@@ -1,5 +1,5 @@
 """
-InHouse League — Tournament API Management + Webhook Receiver
+CCS League — Tournament API Management + Webhook Receiver
 ==============================================================
 Handles:
   1. Registering as a tournament provider with Riot
@@ -55,7 +55,7 @@ log = logging.getLogger("tournament")
 
 # ── FastAPI App ───────────────────────────────────────────
 
-app = FastAPI(title="InHouse League API", version="1.0.0")
+app = FastAPI(title="CCS League API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

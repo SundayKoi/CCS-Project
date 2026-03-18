@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-InHouse League — Riot API Match Ingestion Service
+CCS League — Riot API Match Ingestion Service
 ===================================================
 Pulls match data from Riot API Match-V5, parses it,
 and writes to Supabase Postgres.
@@ -775,7 +775,7 @@ def scan_for_new_games(split_id: Optional[str] = None):
 # ── CLI ───────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="InHouse League — Riot API Ingestion")
+    parser = argparse.ArgumentParser(description="CCS League — Riot API Ingestion")
     parser.add_argument("--match-id", help="Ingest a specific Riot match ID (e.g., NA1_4953286179)")
     parser.add_argument("--match-ids", nargs="+", help="Ingest multiple Riot match IDs (space-separated)")
     parser.add_argument("--scan", action="store_true", help="Scan all players for new games")

@@ -87,7 +87,7 @@ function NavBar({ active, setActive, isMobile }) {
     </div>}
   </nav>);
   return (<nav style={{ background: "#111", borderBottom: "2px solid #c2185b", display: "flex", alignItems: "center", padding: "0 20px", overflowX: "auto", scrollbarWidth: "none" }}>
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginRight: 24, padding: "10px 0", minWidth: "fit-content" }}><span style={{ fontSize: 22 }}>⚔️</span><span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#fff", letterSpacing: 2 }}>INHOUSE<span style={{ color: "#c2185b" }}>LEAGUE</span></span></div>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginRight: 24, padding: "10px 0", minWidth: "fit-content" }}><span style={{ fontSize: 22 }}>⚔️</span><span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, color: "#fff", letterSpacing: 2 }}>CCS<span style={{ color: "#c2185b" }}>LEAGUE</span></span></div>
     {tabs.map(t => t === "Stats" ? <a key={t} href="/stats.html" style={{ background: "none", border: "none", cursor: "pointer", padding: "12px 14px", color: "#888", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: 0.8, borderBottom: "2px solid transparent", whiteSpace: "nowrap", textTransform: "uppercase", textDecoration: "none" }}>Stats</a> : <button key={t} onClick={() => setActive(t)} style={{ background: "none", border: "none", cursor: "pointer", padding: "12px 14px", color: active === t ? "#fff" : "#888", fontFamily: "'Oswald', sans-serif", fontSize: 13, fontWeight: active === t ? 700 : 400, letterSpacing: 0.8, borderBottom: active === t ? "2px solid #c2185b" : "2px solid transparent", whiteSpace: "nowrap", textTransform: "uppercase" }}>{t}</button>)}
     <Link to="/admin" style={{ marginLeft: "auto", fontSize: 10, color: "#444", fontFamily: "'Oswald', sans-serif", textDecoration: "none", letterSpacing: 0.5, padding: "12px 8px" }}>ADMIN</Link>
   </nav>);
@@ -667,7 +667,7 @@ export default function Home() {
       </div>}
 
     <footer style={{ borderTop: "1px solid #151515", padding: isMobile ? "20px 12px" : "24px 20px", marginTop: 40, textAlign: "center" }}>
-      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: "#333", letterSpacing: 3 }}>INHOUSE<span style={{ color: "#c2185b" }}>LEAGUE</span></span>
+      <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 18, color: "#333", letterSpacing: 3 }}>CCS<span style={{ color: "#c2185b" }}>LEAGUE</span></span>
       <div style={{ fontSize: 10, color: "#333", marginTop: 8 }}>Amateur Esports · Community Driven</div>
     </footer>
     {isMobile && <MobileBottomBar active={tab} setActive={setTab} />}
