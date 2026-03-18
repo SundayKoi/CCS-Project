@@ -55,7 +55,7 @@ export default function Home() {
           </Link>
         </div>
       ) : (
-        <div className="max-w-[1200px] mx-auto" style={{ padding: isMobile ? 12 : 20 }}>
+        <div className="max-w-[1280px] mx-auto" style={{ padding: isMobile ? 12 : "24px 32px" }}>
           {tab === "Scores" ? <ScoresView matches={matches} isMobile={isMobile} />
           : tab === "Schedule" ? <ScheduleView matches={matches} isMobile={isMobile} />
           : tab === "Standings" ? <StandingsView standings={standings} teams={teams} isMobile={isMobile} />
@@ -63,7 +63,7 @@ export default function Home() {
           : tab === "Teams" ? <TeamsView teams={teams} standings={standings} rosters={rosters} isMobile={isMobile} />
           : tab === "Players" ? <PlayersView players={players} isMobile={isMobile} />
           : (
-            <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-[1fr_280px]" : "grid-cols-[1fr_320px]"}`} style={{ gap: isMobile ? 16 : 20 }}>
+            <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-[1fr_300px]" : "grid-cols-[1fr_360px]"}`} style={{ gap: isMobile ? 16 : 28 }}>
               <div>
                 {hero ? (
                   <HeroArticle article={hero} isMobile={isMobile} />
@@ -92,7 +92,7 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-5">
                 <StandingsWidget standings={standings} teams={teams} />
                 <PlayerLeaders players={players} isMobile={isMobile} />
                 {isMobile && <QuickLinks isMobile={isMobile} />}

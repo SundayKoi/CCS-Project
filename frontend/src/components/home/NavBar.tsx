@@ -67,8 +67,8 @@ export function NavBar({ active, setActive, isMobile }: Props) {
   }
 
   return (
-    <nav className="bg-bg2 border-b-2 border-accent flex items-center px-5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-      <div className="flex items-center gap-2 mr-6 py-2.5 min-w-fit">
+    <nav className="bg-bg2 border-b-2 border-accent flex items-center px-6 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+      <div className="flex items-center gap-2 mr-8 py-3 min-w-fit">
         <span className="text-[22px]">⚔️</span>
         <span className="font-display text-[22px] text-text-bright tracking-widest">
           CCS<span className="text-accent">LEAGUE</span>
@@ -76,14 +76,14 @@ export function NavBar({ active, setActive, isMobile }: Props) {
       </div>
       {TABS.map(t =>
         t === "Stats" ? (
-          <a key={t} href="/stats.html" className="bg-transparent border-none cursor-pointer py-3 px-3.5 text-text-secondary font-heading text-[13px] tracking-wider border-b-2 border-b-transparent whitespace-nowrap uppercase no-underline">
+          <a key={t} href="/stats.html" className="bg-transparent border-none cursor-pointer py-3.5 px-4 text-text-secondary font-heading text-sm tracking-wider border-b-2 border-b-transparent whitespace-nowrap uppercase no-underline">
             Stats
           </a>
         ) : (
           <button
             key={t}
             onClick={() => setActive(t)}
-            className={`bg-transparent border-none cursor-pointer py-3 px-3.5 font-heading text-[13px] tracking-wider whitespace-nowrap uppercase ${
+            className={`bg-transparent border-none cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase ${
               active === t ? "text-text-bright font-bold border-b-2 border-b-accent" : "text-text-secondary font-normal border-b-2 border-b-transparent"
             }`}
           >
@@ -94,7 +94,7 @@ export function NavBar({ active, setActive, isMobile }: Props) {
       <div className="ml-auto">
         <ThemeToggle />
       </div>
-      <Link to="/admin" className="text-[10px] text-text-dim font-heading no-underline tracking-wide py-3 px-2">
+      <Link to="/admin" className="text-[10px] text-text-dim font-heading no-underline tracking-wide py-3.5 px-3">
         ADMIN
       </Link>
     </nav>

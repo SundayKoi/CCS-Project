@@ -32,12 +32,12 @@ export function QuickLinks({ isMobile }: Props) {
 
   return (
     <div className="bg-bg2 rounded-md border border-border overflow-hidden">
-      <div className="px-3.5 py-3 border-b border-border">
+      <div className="px-4 py-3.5 border-b border-border">
         <span className="font-display text-[15px] text-text-bright tracking-widest">QUICK LINKS</span>
       </div>
       {LINKS.map((l, i) => {
         const content = (
-          <div className={`flex items-center gap-2.5 px-3.5 py-2.5 cursor-pointer ${i < LINKS.length - 1 ? "border-b border-bg3" : ""}`}>
+          <div className={`flex items-center gap-3 px-4 py-3 cursor-pointer ${i < LINKS.length - 1 ? "border-b border-bg3" : ""}`}>
             <span className="text-base">{l.icon}</span>
             <span className="font-heading text-[13px] text-text">{l.label}</span>
           </div>

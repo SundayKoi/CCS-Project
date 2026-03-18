@@ -13,14 +13,14 @@ export function UpcomingSchedule({ matches, isMobile }: Props) {
 
   return (
     <div className="bg-bg2 rounded-md border border-border overflow-hidden">
-      <div className="px-3.5 py-3 border-b border-border">
+      <div className="px-4 py-3.5 border-b border-border">
         <span className="font-display text-[15px] text-text-bright tracking-widest">UPCOMING</span>
       </div>
       {upcoming.map((m, i) => {
         const b = m.team_blue || {} as any;
         const r = m.team_red || {} as any;
         return (
-          <div key={m.id} className={`px-3.5 py-3 ${i < upcoming.length - 1 ? "border-b border-bg3" : ""}`}>
+          <div key={m.id} className={`px-4 py-3.5 ${i < upcoming.length - 1 ? "border-b border-bg3" : ""}`}>
             <div className="text-[10px] text-text-muted mb-1.5 font-heading tracking-wide">{fmtTime(m.scheduled_at)}</div>
             <div className="flex items-center justify-center" style={{ gap: isMobile ? 10 : 16 }}>
               <div className="flex items-center gap-1.5 flex-1 justify-end">

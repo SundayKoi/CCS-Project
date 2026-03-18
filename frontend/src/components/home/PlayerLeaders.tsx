@@ -20,7 +20,7 @@ export function PlayerLeaders({ players, isMobile }: Props) {
 
   return (
     <div className="bg-bg2 rounded-md overflow-hidden border border-border">
-      <div className="px-3.5 py-3 border-b border-border flex justify-between items-center">
+      <div className="px-4 py-3.5 border-b border-border flex justify-between items-center">
         <span className="font-display text-[15px] text-text-bright tracking-widest">STAT LEADERS</span>
         <select
           value={stat}
@@ -34,7 +34,7 @@ export function PlayerLeaders({ players, isMobile }: Props) {
         <div
           key={p.id || i}
           className={`flex items-center gap-2.5 ${i < sorted.length - 1 ? "border-b border-bg3" : ""}`}
-          style={{ padding: isMobile ? "10px 12px" : "10px 14px" }}
+          style={{ padding: isMobile ? "10px 12px" : "12px 16px" }}
         >
           <span className={`font-display text-xl min-w-[24px] text-center ${i === 0 ? "text-accent" : "text-text-subtle"}`}>
             {i + 1}

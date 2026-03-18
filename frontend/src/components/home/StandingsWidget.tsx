@@ -16,7 +16,7 @@ export function StandingsWidget({ standings, teams }: Props) {
   if (!standings.length && teams.length) {
     return (
       <div className="bg-bg2 rounded-md overflow-hidden border border-border">
-        <div className="px-3.5 py-3 border-b border-border">
+        <div className="px-4 py-3.5 border-b border-border">
           <span className="font-display text-[15px] text-text-bright tracking-widest">TEAMS</span>
         </div>
         {teams.map((t, i) => (
@@ -62,8 +62,8 @@ export function StandingsWidget({ standings, teams }: Props) {
             const t = s.teams || {} as Team;
             return (
               <tr key={s.id} className="cursor-pointer">
-                <td className="px-3 py-2.5">
-                  <div className="flex items-center gap-2">
+                <td className="px-3.5 py-3">
+                  <div className="flex items-center gap-2.5">
                     <span className="text-[9px] text-text-dim font-mono min-w-[14px] text-right">{i + 1}</span>
                     <TeamBadge team={t} />
                     <span className="font-heading text-[13px] text-text font-medium">{t.name}</span>
