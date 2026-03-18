@@ -47,6 +47,8 @@ SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
 RIOT_REGION = os.environ.get("RIOT_REGION", "NA")           # For tournament API: "NA", "EUW", etc.
 RIOT_MASS_REGION = os.environ.get("RIOT_MASS_REGION", "americas")
 CALLBACK_BASE_URL = os.environ.get("CALLBACK_BASE_URL", "")  # e.g. "https://api.yourleague.com"
+WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
+ADMIN_API_KEY = os.environ.get("ADMIN_API_KEY", "")
 
 RIOT_BASE = f"https://{RIOT_MASS_REGION}.api.riotgames.com"
 
@@ -57,13 +59,19 @@ log = logging.getLogger("tournament")
 
 app = FastAPI(title="CCS League API", version="1.0.0")
 
+ALLOWED_ORIGINS = os.environ.get("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Lock this down in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def verify_admin(request: Request):
+    key = request.headers.get("x-api-key", "")
+    if not ADMIN_API_KEY or key != ADMIN_API_KEY:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 def get_db() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -82,7 +90,7 @@ class TournamentSetupRequest(BaseModel):
 
 
 @app.post("/api/admin/tournament/setup")
-async def setup_tournament(req: TournamentSetupRequest):
+async def setup_tournament(req: TournamentSetupRequest, _auth=Depends(verify_admin)):
     """
     One-time setup: register as a provider + create a tournament.
     Only needs to be done once per region and once per split.
@@ -170,7 +178,7 @@ class GenerateCodesRequest(BaseModel):
 
 
 @app.post("/api/admin/codes/generate")
-async def generate_codes(req: GenerateCodesRequest):
+async def generate_codes(req: GenerateCodesRequest, _auth=Depends(verify_admin)):
     """
     Generate tournament codes for one or more scheduled matches.
     Each match gets one code. The match UUID is embedded in the
@@ -277,7 +285,7 @@ async def generate_codes(req: GenerateCodesRequest):
 
 
 @app.get("/api/admin/codes/{match_id}")
-async def get_code_for_match(match_id: str):
+async def get_code_for_match(match_id: str, _auth=Depends(verify_admin)):
     """Get the tournament code for a specific match."""
     db = get_db()
     result = (
@@ -317,6 +325,12 @@ async def riot_callback(request: Request):
     We then use the match ID from the callback to fetch full
     stats from Match-V5 and ingest them.
     """
+    # Verify webhook secret
+    if WEBHOOK_SECRET:
+        api_key = request.headers.get("x-api-key", "")
+        if api_key != WEBHOOK_SECRET:
+            raise HTTPException(status_code=403, detail="Invalid webhook secret")
+
     try:
         body = await request.body()
         # Riot sends the callback as a JSON-encoded string
@@ -410,7 +424,7 @@ async def riot_callback(request: Request):
 # ══════════════════════════════════════════════════════════
 
 @app.post("/api/admin/codes/{code}/fetch")
-async def fetch_by_tournament_code(code: str):
+async def fetch_by_tournament_code(code: str, _auth=Depends(verify_admin)):
     """
     Fallback: if the callback was never received, manually
     pull match IDs associated with a tournament code.

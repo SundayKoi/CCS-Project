@@ -151,6 +151,9 @@ function TeamsTab({ seasons, divisions, toast }) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) { toast("Please select an image file", "error"); return; }
+    const allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (!allowedExts.includes(ext)) { toast("Allowed: JPG, PNG, GIF, WEBP, SVG", "error"); return; }
     if (file.size > 2 * 1024 * 1024) { toast("Image must be under 2MB", "error"); return; }
     setUploading(true);
     try {
