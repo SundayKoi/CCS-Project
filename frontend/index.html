@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,13 +8,40 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style>
+      /* ── Theme Variables ── */
+      [data-theme="dark"] {
+        --bg: #0a0a0a; --bg2: #111; --bg3: #151515; --bg-input: #1a1a1a;
+        --border: #1a1a1a; --border2: #2a2a2a; --border3: #222;
+        --text: #e5e5e5; --text-bright: #fff; --text-secondary: #888;
+        --text-muted: #555; --text-dim: #444; --text-subtle: #333;
+        --accent: #c2185b; --accent-light: rgba(194,24,91,0.12);
+        --green: #10b981; --red: #ef4444; --gold: #ffd700; --blue: #3b82f6;
+        --orange: #f59e0b; --purple: #8b5cf6;
+        --toast-success-bg: #065F46; --toast-error-bg: #991B1B;
+        --overlay: rgba(0,0,0,0.85);
+      }
+      [data-theme="light"] {
+        --bg: #f5f5f5; --bg2: #fff; --bg3: #fafafa; --bg-input: #f0f0f0;
+        --border: #e0e0e0; --border2: #d0d0d0; --border3: #ddd;
+        --text: #1a1a1a; --text-bright: #111; --text-secondary: #666;
+        --text-muted: #888; --text-dim: #aaa; --text-subtle: #ccc;
+        --accent: #c2185b; --accent-light: rgba(194,24,91,0.08);
+        --green: #059669; --red: #dc2626; --gold: #b8860b; --blue: #2563eb;
+        --orange: #d97706; --purple: #7c3aed;
+        --toast-success-bg: #d1fae5; --toast-error-bg: #fee2e2;
+        --overlay: rgba(0,0,0,0.5);
+      }
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: #0a0a0a; color: #e5e5e5; font-family: 'Source Sans 3', sans-serif; }
-      ::selection { background: #c2185b; color: #fff; }
+      body { background: var(--bg); color: var(--text); font-family: 'Source Sans 3', sans-serif; transition: background 0.2s, color 0.2s; }
+      ::selection { background: var(--accent); color: #fff; }
       ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: #0a0a0a; }
-      ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+      ::-webkit-scrollbar-track { background: var(--bg); }
+      ::-webkit-scrollbar-thumb { background: var(--border3); border-radius: 3px; }
     </style>
+    <script>
+      // Apply saved theme before first paint to prevent flash
+      (function(){var t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t)})();
+    </script>
   </head>
   <body>
     <div id="root"></div>

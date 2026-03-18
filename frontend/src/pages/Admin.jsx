@@ -3,53 +3,53 @@ import { Auth, db, uploadFile } from "../lib/supabase";
 
 // ── Shared Styles ────────────────────────────────────────
 const S = {
-  page: { background: "#0a0a0a", minHeight: "100vh", color: "#e5e5e5", fontFamily: "'Source Sans 3', sans-serif", padding: 0 },
-  topBar: { background: "#050505", borderBottom: "1px solid #1a1a1a", padding: "8px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" },
-  brand: { fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "#fff", letterSpacing: 2 },
-  accent: { color: "#c2185b" },
+  page: { background: "var(--bg)", minHeight: "100vh", color: "var(--text)", fontFamily: "'Source Sans 3', sans-serif", padding: 0 },
+  topBar: { background: "var(--bg2)", borderBottom: "1px solid var(--border)", padding: "8px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" },
+  brand: { fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, color: "var(--text-bright)", letterSpacing: 2 },
+  accent: { color: "var(--accent)" },
   content: { maxWidth: 1100, margin: "0 auto", padding: "20px" },
-  card: { background: "#111", border: "1px solid #1a1a1a", borderRadius: 8, overflow: "hidden", marginBottom: 16 },
-  cardHeader: { padding: "14px 18px", borderBottom: "1px solid #1a1a1a", display: "flex", justifyContent: "space-between", alignItems: "center" },
-  cardTitle: { fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, color: "#fff", letterSpacing: 1.5 },
+  card: { background: "var(--bg2)", border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden", marginBottom: 16 },
+  cardHeader: { padding: "14px 18px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" },
+  cardTitle: { fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, color: "var(--text-bright)", letterSpacing: 1.5 },
   cardBody: { padding: 18 },
   input: {
-    background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 6, color: "#e5e5e5",
+    background: "var(--bg-input)", border: "1px solid var(--border2)", borderRadius: 6, color: "var(--text)",
     padding: "10px 14px", fontSize: 13, fontFamily: "'Source Sans 3', sans-serif", width: "100%",
     outline: "none", transition: "border-color 0.15s",
   },
   select: {
-    background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 6, color: "#e5e5e5",
+    background: "var(--bg-input)", border: "1px solid var(--border2)", borderRadius: 6, color: "var(--text)",
     padding: "10px 14px", fontSize: 13, fontFamily: "'Source Sans 3', sans-serif", width: "100%",
     outline: "none", cursor: "pointer",
   },
-  label: { fontSize: 11, color: "#888", fontFamily: "'Oswald', sans-serif", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 4, display: "block" },
+  label: { fontSize: 11, color: "var(--text-secondary)", fontFamily: "'Oswald', sans-serif", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 4, display: "block" },
   btnPrimary: {
-    background: "#c2185b", color: "#fff", border: "none", borderRadius: 6, padding: "10px 20px",
+    background: "var(--accent)", color: "#fff", border: "none", borderRadius: 6, padding: "10px 20px",
     fontSize: 13, fontFamily: "'Oswald', sans-serif", fontWeight: 500, letterSpacing: 0.8,
     cursor: "pointer", textTransform: "uppercase",
   },
   btnSecondary: {
-    background: "#1a1a1a", color: "#ccc", border: "1px solid #2a2a2a", borderRadius: 6, padding: "10px 20px",
+    background: "var(--bg-input)", color: "var(--text)", border: "1px solid var(--border2)", borderRadius: 6, padding: "10px 20px",
     fontSize: 13, fontFamily: "'Oswald', sans-serif", fontWeight: 400, letterSpacing: 0.8,
     cursor: "pointer", textTransform: "uppercase",
   },
   btnDanger: {
-    background: "transparent", color: "#ef4444", border: "1px solid #3a1a1a", borderRadius: 6,
+    background: "transparent", color: "var(--red)", border: "1px solid var(--border2)", borderRadius: 6,
     padding: "6px 12px", fontSize: 11, fontFamily: "'Oswald', sans-serif", cursor: "pointer",
     letterSpacing: 0.5, textTransform: "uppercase",
   },
   row: { display: "flex", gap: 12, marginBottom: 12 },
   col: { flex: 1, display: "flex", flexDirection: "column" },
   table: { width: "100%", borderCollapse: "collapse" },
-  th: { padding: "10px 14px", textAlign: "left", fontSize: 10, color: "#555", fontFamily: "'Oswald', sans-serif", fontWeight: 400, letterSpacing: 1, borderBottom: "1px solid #1a1a1a", textTransform: "uppercase" },
-  td: { padding: "10px 14px", fontSize: 13, borderBottom: "1px solid #111", verticalAlign: "middle" },
+  th: { padding: "10px 14px", textAlign: "left", fontSize: 10, color: "var(--text-muted)", fontFamily: "'Oswald', sans-serif", fontWeight: 400, letterSpacing: 1, borderBottom: "1px solid var(--border)", textTransform: "uppercase" },
+  td: { padding: "10px 14px", fontSize: 13, borderBottom: "1px solid var(--border)", verticalAlign: "middle" },
   badge: (color) => ({
     display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 10,
     fontFamily: "'Oswald', sans-serif", letterSpacing: 0.5, fontWeight: 500,
     background: color + "22", color: color, textTransform: "uppercase",
   }),
-  mono: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#888" },
-  empty: { padding: 40, textAlign: "center", color: "#444", fontSize: 13 },
+  mono: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "var(--text-secondary)" },
+  empty: { padding: 40, textAlign: "center", color: "var(--text-dim)", fontSize: 13 },
 };
 
 // ── Toast ────────────────────────────────────────────────
@@ -58,7 +58,7 @@ function Toast({ message, type, onClose }) {
   if (!message) return null;
   return <div style={{
     position: "fixed", bottom: 20, right: 20, padding: "12px 20px", borderRadius: 8,
-    background: type === "success" ? "#065F46" : "#991B1B", color: "#fff", fontSize: 13,
+    background: type === "success" ? "var(--toast-success-bg)" : "var(--toast-error-bg)", color: "var(--text-bright)", fontSize: 13,
     boxShadow: "0 4px 20px rgba(0,0,0,0.5)", zIndex: 999,
   }}>{message}</div>;
 }
@@ -917,7 +917,8 @@ export default function Admin() {
             <span style={{ ...S.badge("#c2185b"), marginLeft: 8 }}>ADMIN</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <span style={{ fontSize: 12, color: "#666" }}>{Auth.getUser()?.email}</span>
+            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{Auth.getUser()?.email}</span>
+            <button onClick={(e) => { const h = document.documentElement; const n = h.getAttribute("data-theme") === "dark" ? "light" : "dark"; h.setAttribute("data-theme", n); localStorage.setItem("theme", n); e.currentTarget.textContent = n === "dark" ? "🌙" : "☀️"; }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 6, padding: "4px 10px", fontSize: 16, cursor: "pointer", lineHeight: 1 }} title="Toggle theme">{(typeof localStorage !== "undefined" && localStorage.getItem("theme") === "light") ? "☀️" : "🌙"}</button>
             <button onClick={() => { Auth.signOut(); setAuthed(false); toast("Signed out"); }} style={{ ...S.btnSecondary, padding: "6px 14px", fontSize: 11 }}>Sign Out</button>
           </div>
         </div>
