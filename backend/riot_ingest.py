@@ -139,6 +139,24 @@ class RiotAPI:
         return result if isinstance(result, dict) else None
 
 
+# ── Champion ID Resolver ─────────────────────────────────
+
+_CHAMP_ID_MAP: dict[int, str] = {}
+
+def get_champion_name(champ_id: int) -> str | None:
+    """Resolve champion ID to name using Data Dragon."""
+    if not _CHAMP_ID_MAP:
+        try:
+            versions = requests.get("https://ddragon.leagueoflegends.com/api/versions.json").json()
+            ver = versions[0] if versions else "14.24.1"
+            data = requests.get(f"https://ddragon.leagueoflegends.com/cdn/{ver}/data/en_US/champion.json").json()
+            for champ in data.get("data", {}).values():
+                _CHAMP_ID_MAP[int(champ["key"])] = champ["name"]
+        except Exception:
+            pass
+    return _CHAMP_ID_MAP.get(champ_id)
+
+
 # ── Match Parser ─────────────────────────────────────────
 
 # Map Riot's teamPosition to our role format
@@ -657,6 +675,34 @@ def ingest_match(riot_match_id: str, split_id: Optional[str] = None) -> bool:
             log.error(f"Failed to insert stats for {p.get('player_id')}: {e}")
 
     log.info(f"Inserted {stats_inserted}/10 player stat rows")
+
+    # Insert bans
+    bans_inserted = 0
+    for team_data in match_data["info"].get("teams", []):
+        team_id_num = team_data["teamId"]
+        team_side = "blue" if team_id_num == 100 else "red"
+        ban_team_id = blue_team_id if team_side == "blue" else red_team_id
+
+        for ban in team_data.get("bans", []):
+            champ_id = ban.get("championId", 0)
+            if champ_id <= 0:
+                continue  # No ban in this slot
+            pick_turn = ban.get("pickTurn", 0)
+            champ_name = get_champion_name(champ_id)
+            try:
+                db.table("team_bans").insert({
+                    "game_id": game_uuid,
+                    "team_id": ban_team_id,
+                    "team_side": team_side,
+                    "ban_order": pick_turn,
+                    "champion_id": champ_id,
+                    "champion_name": champ_name,
+                }).execute()
+                bans_inserted += 1
+            except Exception as e:
+                log.error(f"Failed to insert ban: {e}")
+
+    log.info(f"Inserted {bans_inserted} bans")
 
     # Update the match record
     if match_uuid and winner_team_id:
