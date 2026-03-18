@@ -67,7 +67,7 @@ export function NavBar({ active, setActive, isMobile }: Props) {
   }
 
   return (
-    <nav className="bg-bg2 border-b-2 border-accent flex items-center px-6 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+    <nav className="bg-bg2 border-b-2 border-accent flex items-center w-full px-6 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
       <div className="flex items-center gap-2 mr-8 py-3 min-w-fit">
         <span className="text-[22px]">⚔️</span>
         <span className="font-display text-[22px] text-text-bright tracking-widest">

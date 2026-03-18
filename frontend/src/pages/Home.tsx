@@ -29,7 +29,7 @@ export default function Home() {
   const rest = articles.filter(a => a.id !== hero?.id);
 
   return (
-    <div className="bg-bg min-h-screen text-text font-body" style={{ paddingBottom: isMobile ? 72 : 0 }}>
+    <div className="bg-bg min-h-screen w-full text-text font-body" style={{ paddingBottom: isMobile ? 72 : 0 }}>
       {/* Season Bar */}
       <div className="bg-bg flex justify-between items-center border-b border-bg2" style={{ padding: isMobile ? "6px 12px" : "6px 20px" }}>
         <span className="text-text-muted font-heading tracking-wider" style={{ fontSize: isMobile ? 9 : 10 }}>
