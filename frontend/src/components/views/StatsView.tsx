@@ -15,14 +15,14 @@ interface StatOption {
 }
 
 const STAT_OPTIONS: StatOption[] = [
-  { key: "kda", label: "KDA", format: v => v.toFixed(2) },
-  { key: "kills", label: "Kills/G", format: v => v.toFixed(1), perGame: true },
-  { key: "deaths", label: "Deaths/G", format: v => v.toFixed(1), perGame: true },
-  { key: "assists", label: "Assists/G", format: v => v.toFixed(1), perGame: true },
-  { key: "cs", label: "CS/G", format: v => v.toFixed(1) },
-  { key: "damage", label: "DMG/G", format: v => Math.round(v).toLocaleString() },
-  { key: "gold", label: "Gold/G", format: v => Math.round(v).toLocaleString() },
-  { key: "winRate", label: "Win Rate", format: v => `${v.toFixed(1)}%` },
+  { key: "kda", label: "KDA", format: v => Number(v).toFixed(2) },
+  { key: "kills", label: "Kills/G", format: v => Number(v).toFixed(1), perGame: true },
+  { key: "deaths", label: "Deaths/G", format: v => Number(v).toFixed(1), perGame: true },
+  { key: "assists", label: "Assists/G", format: v => Number(v).toFixed(1), perGame: true },
+  { key: "cs", label: "CS/G", format: v => Number(v).toFixed(1) },
+  { key: "damage", label: "DMG/G", format: v => Math.round(Number(v)).toLocaleString() },
+  { key: "gold", label: "Gold/G", format: v => Math.round(Number(v)).toLocaleString() },
+  { key: "winRate", label: "Win Rate", format: v => `${Number(v).toFixed(1)}%` },
 ];
 
 const ROLES = ["All", "Top", "Jng", "Mid", "ADC", "Sup"];
