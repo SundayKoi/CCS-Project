@@ -13,6 +13,7 @@ import { SeasonsTab } from "../components/admin/SeasonsTab";
 import { ArticlesTab } from "../components/admin/ArticlesTab";
 import { TwitterTab } from "../components/admin/TwitterTab";
 import { TwitchTab } from "../components/admin/TwitchTab";
+import { ApplicationsTab } from "../components/admin/ApplicationsTab";
 
 export default function Admin() {
   const [authed, setAuthed] = useState(false);
@@ -94,6 +95,7 @@ export default function Admin() {
             {tab === "Players" && <PlayersTab toast={toast} />}
             {tab === "Rosters" && <RostersTab toast={toast} />}
             {tab === "Schedule" && <ScheduleTab toast={toast} />}
+            {tab === "Applications" && <ApplicationsTab toast={toast} />}
             {tab === "Articles" && <ArticlesTab toast={toast} />}
             {tab === "Twitter" && <TwitterTab toast={toast} />}
             {tab === "Twitch" && <TwitchTab toast={toast} />}

@@ -20,13 +20,13 @@ export function ScoreboardTicker({ matches, isMobile }: Props) {
           return (
             <div
               key={m.id}
-              className={`flex flex-col shrink-0 cursor-pointer ${i < matches.length - 1 ? "border-r border-border" : ""}`}
+              className={`flex flex-col shrink-0 cursor-pointer ${isLive ? "border-l-[3px] border-l-ccs-red bg-ccs-red/5" : ""} ${i < matches.length - 1 ? "border-r border-border" : ""}`}
               style={{ minWidth: isMobile ? 150 : 180, padding: isMobile ? "8px 12px" : "10px 16px" }}
             >
               {isLive ? (
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-ccs-red shadow-[0_0_6px_var(--red)]" style={{ animation: "pulse 1.5s infinite" }} />
-                  <span className="text-[10px] text-ccs-red font-bold tracking-wider font-display">LIVE</span>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-ccs-red shadow-[0_0_10px_var(--red),0_0_20px_var(--red)]" style={{ animation: "pulse 1.5s infinite" }} />
+                  <span className="text-[11px] text-ccs-red font-bold tracking-widest font-display" style={{ textShadow: "0 0 8px var(--red)" }}>LIVE</span>
                 </div>
               ) : (
                 <span className="text-[10px] text-text-muted font-semibold mb-1 tracking-wide font-display">

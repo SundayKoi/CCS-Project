@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { TeamBadge } from "../TeamBadge";
 import type { Match } from "../../hooks/useLeagueData";
 
@@ -20,7 +21,7 @@ export function ScoresView({ matches, isMobile }: Props) {
           const bWin = m.winner_team_id === b.id;
           const rWin = m.winner_team_id === r.id;
           return (
-            <div key={m.id} className={`bg-bg2 border border-border rounded-md ${isMobile ? "px-3 py-3.5" : "px-5 py-4"}`}>
+            <Link key={m.id} to={`/match/${m.id}`} className={`block bg-bg2 border border-border rounded-md cursor-pointer hover:border-border2 transition-colors ${isMobile ? "px-3 py-3.5" : "px-5 py-4"}`}>
               <div className="text-[10px] text-text-muted mb-2.5 font-heading tracking-wide">
                 FINAL{m.completed_at ? ` · ${new Date(m.completed_at).toLocaleDateString([], { month: "short", day: "numeric" })}` : ""}
               </div>
@@ -47,7 +48,7 @@ export function ScoresView({ matches, isMobile }: Props) {
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

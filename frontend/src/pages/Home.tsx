@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "../hooks/useWindowSize";
 import { useLeagueData } from "../hooks/useLeagueData";
@@ -23,7 +23,19 @@ export default function Home() {
   const w = useWindowSize();
   const isMobile = w < 768;
   const isTablet = w >= 768 && w < 1024;
-  const { teams, matches, standings, players, rosters, articles, splits, twitterFeeds, twitchEmbeds, loading } = useLeagueData();
+  const { teams, matches, standings, players, rosters, articles, splits, twitterFeeds, twitchEmbeds, loading, refresh } = useLeagueData();
+  const hasLive = matches.some(m => m.status === "live");
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (hasLive) {
+      intervalRef.current = setInterval(() => { refresh(); }, 30000);
+    }
+    return () => {
+      if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    };
+  }, [hasLive, refresh]);
+
   const parentDomain = window.location.hostname;
   const split = splits[0];
   const hero = articles.find(a => a.article_type === "hero");
@@ -36,9 +48,9 @@ export default function Home() {
         <span className="text-text-muted font-heading tracking-wider" style={{ fontSize: isMobile ? 9 : 10 }}>
           {split ? `${split.seasons?.name || "SEASON"} · ${split.name}` : "PRESEASON"}
         </span>
-        <span className="text-[#0a0a0a] bg-accent rounded font-heading font-semibold tracking-wide cursor-pointer" style={{ fontSize: isMobile ? 9 : 10, padding: "3px 10px" }}>
+        <Link to="/register" className="text-[#0a0a0a] bg-accent rounded font-heading font-semibold tracking-wide cursor-pointer no-underline" style={{ fontSize: isMobile ? 9 : 10, padding: "3px 10px" }}>
           JOIN CCS
-        </span>
+        </Link>
       </div>
 
       <ScoreboardTicker matches={matches} isMobile={isMobile} />

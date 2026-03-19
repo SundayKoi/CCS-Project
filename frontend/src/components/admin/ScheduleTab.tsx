@@ -62,6 +62,7 @@ export function ScheduleTab({ toast }: Props) {
 
   const resetForm = () => { setEditing(null); setForm({ team_blue_id: "", team_red_id: "", split_id: "", scheduled_at: "", match_format: "bo1", season_phase: "Regular" }); };
 
+  const live = matches.filter(m => m.status === "live");
   const scheduled = matches.filter(m => m.status === "scheduled");
   const completed = matches.filter(m => m.status === "completed");
 
@@ -144,6 +145,18 @@ export function ScheduleTab({ toast }: Props) {
                 <td className="px-3.5 py-2.5 border-b border-border font-mono text-[11px] text-text-secondary">{(m.match_format || "bo1").toUpperCase()}</td>
                 <td className="px-3.5 py-2.5 border-b border-border text-right">
                   <button className="bg-bg-input text-text border border-border2 rounded-md px-3 py-1.5 text-[11px] font-heading tracking-wider uppercase cursor-pointer mr-1.5" onClick={() => edit(m)}>Edit</button>
+                  <button
+                    className="bg-ccs-red text-white border-none rounded-md px-3 py-1.5 text-[11px] font-heading tracking-wider uppercase cursor-pointer mr-1.5"
+                    onClick={async () => {
+                      try {
+                        await db(`matches?id=eq.${m.id}`, { method: "PATCH", body: { status: "live" } });
+                        toast("Match set to LIVE", "success");
+                        load();
+                      } catch (e: any) { toast(e.message, "error"); }
+                    }}
+                  >
+                    Set Live
+                  </button>
                   <button className="bg-transparent text-ccs-red border border-border2 rounded-md px-3 py-1.5 text-[11px] font-heading cursor-pointer uppercase" onClick={() => del(m.id)}>Delete</button>
                 </td>
               </tr>
@@ -151,6 +164,48 @@ export function ScheduleTab({ toast }: Props) {
           </table>
         )}
       </div>
+
+      {/* Live */}
+      {live.length > 0 && (
+        <div className="bg-bg2 border border-ccs-red/40 rounded-lg overflow-hidden mb-4">
+          <div className="px-4 py-3.5 border-b border-border flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-ccs-red shadow-[0_0_8px_var(--red)]" style={{ animation: "pulse 1.5s infinite" }} />
+            <span className="font-display text-[17px] text-ccs-red tracking-widest">LIVE MATCHES ({live.length})</span>
+          </div>
+          <table className="w-full border-collapse">
+            <thead><tr>
+              {["Blue", "", "Red", "Split", "Date", "Format", ""].map((h, i) => (
+                <th key={`${h}-${i}`} className="px-3.5 py-2.5 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border uppercase">{h}</th>
+              ))}
+            </tr></thead>
+            <tbody>{live.map((m: any) => (
+              <tr key={m.id}>
+                <td className="px-3.5 py-2.5 border-b border-border font-heading font-medium text-[13px] text-ccs-blue">{m.team_blue?.name || "TBD"}</td>
+                <td className="px-3.5 py-2.5 border-b border-border text-text-dim text-center text-[11px]">vs</td>
+                <td className="px-3.5 py-2.5 border-b border-border font-heading font-medium text-[13px] text-ccs-red">{m.team_red?.name || "TBD"}</td>
+                <td className="px-3.5 py-2.5 border-b border-border text-[13px]">{m.splits?.name || "—"}</td>
+                <td className="px-3.5 py-2.5 border-b border-border font-mono text-[11px] text-text-secondary">{m.scheduled_at ? new Date(m.scheduled_at).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "TBD"}</td>
+                <td className="px-3.5 py-2.5 border-b border-border font-mono text-[11px] text-text-secondary">{(m.match_format || "bo1").toUpperCase()}</td>
+                <td className="px-3.5 py-2.5 border-b border-border text-right">
+                  <button className="bg-bg-input text-text border border-border2 rounded-md px-3 py-1.5 text-[11px] font-heading tracking-wider uppercase cursor-pointer mr-1.5" onClick={() => edit(m)}>Edit</button>
+                  <button
+                    className="bg-bg-input text-text-secondary border border-border2 rounded-md px-3 py-1.5 text-[11px] font-heading tracking-wider uppercase cursor-pointer mr-1.5"
+                    onClick={async () => {
+                      try {
+                        await db(`matches?id=eq.${m.id}`, { method: "PATCH", body: { status: "scheduled" } });
+                        toast("Match reverted to Scheduled", "success");
+                        load();
+                      } catch (e: any) { toast(e.message, "error"); }
+                    }}
+                  >
+                    Set Scheduled
+                  </button>
+                </td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      )}
 
       {/* Completed */}
       <div className="bg-bg2 border border-border rounded-lg overflow-hidden mb-4">

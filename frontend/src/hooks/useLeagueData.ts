@@ -143,10 +143,13 @@ export interface LeagueData {
   twitterFeeds: TwitterFeed[];
   twitchEmbeds: TwitchEmbed[];
   loading: boolean;
+  refresh: () => void;
 }
 
+type LeagueDataState = Omit<LeagueData, "refresh">;
+
 export function useLeagueData(): LeagueData {
-  const [data, setData] = useState<LeagueData>({
+  const [data, setData] = useState<LeagueDataState>({
     teams: [], matches: [], standings: [], players: [], rosters: [],
     articles: [], splits: [], games: [], twitterFeeds: [], twitchEmbeds: [],
     loading: true,
@@ -228,5 +231,5 @@ export function useLeagueData(): LeagueData {
   }, []);
 
   useEffect(() => { load(); }, [load]);
-  return data;
+  return { ...data, refresh: load };
 }
