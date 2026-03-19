@@ -11,6 +11,8 @@ export function TwitchTab({ toast }: Props) {
   const [channelInput, setChannelInput] = useState("");
   const [clipUrl, setClipUrl] = useState("");
   const [clipTitle, setClipTitle] = useState("");
+  const [ytUrl, setYtUrl] = useState("");
+  const [ytTitle, setYtTitle] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -63,6 +65,31 @@ export function TwitchTab({ toast }: Props) {
       toast("Clip added", "success");
       setClipUrl("");
       setClipTitle("");
+      load();
+    } catch (e: any) { toast(e.message, "error"); }
+  };
+
+  const addYoutube = async () => {
+    const url = ytUrl.trim();
+    if (!url) { toast("Paste a YouTube URL", "error"); return; }
+    if (!/https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+/.test(url)) {
+      toast("Invalid YouTube URL", "error");
+      return;
+    }
+    try {
+      await db("twitch_embeds", {
+        method: "POST",
+        body: {
+          embed_type: "youtube",
+          clip_url: url,
+          title: ytTitle.trim() || "YouTube Video",
+          is_active: true,
+          sort_order: embeds.length,
+        },
+      });
+      toast("YouTube video added", "success");
+      setYtUrl("");
+      setYtTitle("");
       load();
     } catch (e: any) { toast(e.message, "error"); }
   };
@@ -149,6 +176,42 @@ export function TwitchTab({ toast }: Props) {
         </div>
       </div>
 
+      {/* Add YouTube VOD */}
+      <div className="bg-bg2 border border-border rounded-lg overflow-hidden mb-4">
+        <div className="px-4 py-3.5 border-b border-border">
+          <span className="font-display text-[17px] text-text-bright tracking-widest">ADD YOUTUBE VIDEO</span>
+        </div>
+        <div className="p-4">
+          <div className="flex gap-3 mb-3">
+            <div className="flex-[2] flex flex-col">
+              <label className="text-[11px] text-text-secondary font-heading tracking-wider uppercase mb-1">YouTube URL</label>
+              <input
+                className="w-full bg-bg-input border border-border2 rounded-md text-text py-2.5 px-3.5 text-[13px] font-body outline-none focus:border-accent"
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={ytUrl}
+                onChange={e => setYtUrl(e.target.value)}
+              />
+            </div>
+            <div className="flex-1 flex flex-col">
+              <label className="text-[11px] text-text-secondary font-heading tracking-wider uppercase mb-1">Title</label>
+              <input
+                className="w-full bg-bg-input border border-border2 rounded-md text-text py-2.5 px-3.5 text-[13px] font-body outline-none focus:border-accent"
+                placeholder="Week 1 VOD"
+                value={ytTitle}
+                onChange={e => setYtTitle(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && addYoutube()}
+              />
+            </div>
+          </div>
+          <button
+            className="bg-ccs-red text-white border-none rounded-md px-5 py-2.5 text-[13px] font-heading font-medium tracking-wider uppercase cursor-pointer hover:opacity-90"
+            onClick={addYoutube}
+          >
+            Add YouTube Video
+          </button>
+        </div>
+      </div>
+
       {/* Embeds List */}
       <div className="bg-bg2 border border-border rounded-lg overflow-hidden mb-4">
         <div className="px-4 py-3.5 border-b border-border">
@@ -171,6 +234,8 @@ export function TwitchTab({ toast }: Props) {
                   <td className="px-3.5 py-2.5 border-b border-border align-middle">
                     {e.embed_type === "channel" ? (
                       <span className="bg-ccs-purple/20 text-ccs-purple px-2 py-0.5 rounded text-[10px] font-heading tracking-wider uppercase">Channel</span>
+                    ) : e.embed_type === "youtube" ? (
+                      <span className="bg-ccs-red/20 text-ccs-red px-2 py-0.5 rounded text-[10px] font-heading tracking-wider uppercase">YouTube</span>
                     ) : (
                       <span className="bg-ccs-blue/20 text-ccs-blue px-2 py-0.5 rounded text-[10px] font-heading tracking-wider uppercase">Clip</span>
                     )}

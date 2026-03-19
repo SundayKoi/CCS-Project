@@ -1,6 +1,6 @@
 interface TwitchEmbed {
   id: string;
-  embed_type: "channel" | "clip";
+  embed_type: "channel" | "clip" | "youtube";
   channel_name?: string;
   clip_url?: string;
   title?: string;
@@ -15,9 +15,12 @@ interface Props {
 
 function extractClipSlug(url: string): string | null {
   const parts = url.split("/").filter(Boolean);
-  // Handles URLs like https://clips.twitch.tv/SomeClipSlug
-  // or https://www.twitch.tv/channel/clip/SomeClipSlug
   return parts[parts.length - 1] || null;
+}
+
+function extractYoutubeId(url: string): string | null {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
 }
 
 export function TwitchStreams({ embeds, parentDomain }: Props) {
@@ -27,7 +30,8 @@ export function TwitchStreams({ embeds, parentDomain }: Props) {
 
   const channels = activeEmbeds.filter((e) => e.embed_type === "channel");
   const clips = activeEmbeds.filter((e) => e.embed_type === "clip");
-  const sorted = [...channels, ...clips];
+  const youtube = activeEmbeds.filter((e) => e.embed_type === "youtube");
+  const sorted = [...channels, ...clips, ...youtube];
 
   if (sorted.length === 0) return null;
 
@@ -35,7 +39,7 @@ export function TwitchStreams({ embeds, parentDomain }: Props) {
     <div className="bg-bg2 rounded-lg border border-border overflow-hidden">
       <div className="px-4 py-3.5 border-b border-border">
         <span className="font-display text-[15px] text-text-bright tracking-widest">
-          TWITCH
+          STREAMS & VODS
         </span>
       </div>
       <div className="flex flex-col gap-4 p-4">
@@ -83,6 +87,31 @@ export function TwitchStreams({ embeds, parentDomain }: Props) {
                     {embed.title}
                   </p>
                 )}
+              </div>
+            );
+          }
+
+          if (embed.embed_type === "youtube" && embed.clip_url) {
+            const videoId = extractYoutubeId(embed.clip_url);
+            if (!videoId) return null;
+
+            return (
+              <div key={embed.id}>
+                {embed.title && (
+                  <p className="text-xs text-text-muted font-heading tracking-wider mb-2 uppercase">
+                    {embed.title}
+                  </p>
+                )}
+                <div className="aspect-video overflow-hidden rounded-md">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    width="100%"
+                    className="border-0 w-full h-full"
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    title={embed.title || "YouTube video"}
+                  />
+                </div>
               </div>
             );
           }

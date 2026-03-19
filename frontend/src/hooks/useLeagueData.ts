@@ -121,7 +121,7 @@ export interface TwitterFeed {
 
 export interface TwitchEmbed {
   id: string;
-  embed_type: "channel" | "clip";
+  embed_type: "channel" | "clip" | "youtube";
   channel_name?: string;
   clip_url?: string;
   title?: string;
