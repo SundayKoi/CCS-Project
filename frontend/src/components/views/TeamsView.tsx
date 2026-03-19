@@ -25,9 +25,13 @@ export function TeamsView({ teams, standings, rosters, isMobile }: Props) {
                 className="flex items-center gap-3.5 px-4 py-5"
                 style={{ background: `linear-gradient(135deg, ${t.color_primary || "#333"}, ${t.color_accent || "#555"})` }}
               >
-                <div className="w-12 h-12 rounded-lg bg-black/30 flex items-center justify-center text-xl text-white font-bold font-heading">
-                  {teamInitial(t.name)}
-                </div>
+                {t.logo_url ? (
+                  <img src={t.logo_url} alt={t.name} className="w-12 h-12 rounded-lg object-contain bg-black/20" />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-black/30 flex items-center justify-center text-xl text-white font-bold font-heading">
+                    {teamInitial(t.name)}
+                  </div>
+                )}
                 <div>
                   <div className="font-display text-xl text-white tracking-wider">{t.name}</div>
                   <div className="flex gap-2 items-center mt-0.5">

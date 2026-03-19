@@ -6,6 +6,27 @@ interface TeamBadgeProps {
 }
 
 export function TeamBadge({ team, size = 24 }: TeamBadgeProps) {
+  if (team?.logo_url) {
+    return (
+      <img
+        src={team.logo_url}
+        alt={team.name || ""}
+        className="shrink-0 object-contain"
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size > 24 ? 6 : 4,
+        }}
+        onError={(e) => {
+          // Fall back to gradient badge on load error
+          const el = e.currentTarget;
+          el.style.display = "none";
+          el.nextElementSibling?.classList.remove("hidden");
+        }}
+      />
+    );
+  }
+
   return (
     <div
       className="flex items-center justify-center font-heading font-bold text-white shrink-0"
