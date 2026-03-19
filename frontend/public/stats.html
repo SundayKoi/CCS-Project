@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CCS League — Stats Dashboard</title>
+<title>CCS — Stats Dashboard</title>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
@@ -428,7 +428,7 @@ body.embedded .hdr{padding-top:16px}
 <div class="wrap" style="visibility:hidden" id="mainWrap">
   <header class="hdr">
     <div class="badge">Season 1 // Official Stats</div>
-    <h1 data-text="CCS LEAGUE">CCS LEAGUE</h1>
+    <h1 data-text="CCS">CCS</h1>
     <div class="sub">PLAYER PERFORMANCE DASHBOARD</div>
     <div class="cred">Powered by Riot API + Supabase</div>
     <div class="meta-bar">
@@ -486,7 +486,7 @@ body.embedded .hdr{padding-top:16px}
     </div>
   </div>
   <div class="modal-overlay" id="profileModal"><div class="modal"><button class="modal-close" onclick="closeProfile()">✕</button><div id="profileContent"></div></div></div>
-  <div class="ftr">CCS LEAGUE — POWERED BY RIOT API — LIVE FROM SUPABASE</div>
+  <div class="ftr">CCS — POWERED BY RIOT API — LIVE FROM SUPABASE</div>
 </div>
 <button class="btt" id="bttBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">▲</button>
 <div class="toast" id="toast"></div>
@@ -841,7 +841,7 @@ function renderLookup(){const input=document.getElementById('lookupInput');if(in
 
 // ═══ CONFIG ═══
 const DEFAULT_CONFIG={
-  leagueName:'CCS LEAGUE',subtitle:'PLAYER PERFORMANCE DASHBOARD',seasonLabel:'Season 1 // Official Stats',creditLine:'Powered by CCS League',footerText:'CCS LEAGUE — POWERED BY RIOT API — LIVE FROM SUPABASE',
+  leagueName:'CCS',subtitle:'PLAYER PERFORMANCE DASHBOARD',seasonLabel:'Season 1 // Official Stats',creditLine:'Powered by CCS',footerText:'CCS — POWERED BY RIOT API — LIVE FROM SUPABASE',
   colorPrimary:'#c2185b',colorSecondary:'#ef4444',colorAccent:'#8b5cf6',colorBg:'#111',logoUrl:'',
   tabs:[{id:'leaderboard',name:'Leaderboard',enabled:true},{id:'teams',name:'Teams',enabled:true},{id:'champions',name:'Champions',enabled:true},{id:'records',name:'Records',enabled:true},{id:'scouting',name:'Scouting',enabled:true},{id:'lookup',name:'Player Lookup',enabled:true}],
   teamColors:{},minGamesDefault:5

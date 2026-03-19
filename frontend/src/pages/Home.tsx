@@ -61,7 +61,7 @@ export default function Home() {
           src="/stats.html?embed=1"
           className="w-full border-0"
           style={{ height: "calc(100vh - 100px)", minHeight: 600 }}
-          title="CCS League Stats"
+          title="CCS Stats"
         />
       ) : (
         <div className="max-w-[1280px] mx-auto" style={{ padding: isMobile ? 12 : "24px 32px" }}>
@@ -79,7 +79,7 @@ export default function Home() {
                   <div className="rounded-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #6B21A8 0%, #1E1B4B 100%)", padding: isMobile ? "24px 16px" : "40px 28px" }}>
                     <div className="absolute inset-0 opacity-50" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
                     <div className="relative">
-                      <h2 className="font-display text-white tracking-wider mb-2" style={{ fontSize: isMobile ? 24 : 32 }}>WELCOME TO CCS LEAGUE</h2>
+                      <h2 className="font-display text-white tracking-wider mb-2" style={{ fontSize: isMobile ? 24 : 32 }}>WELCOME TO CCS</h2>
                       <p className="text-text-secondary text-sm">{teams.length} teams registered · {split?.name || "Season starting soon"}</p>
                     </div>
                   </div>
