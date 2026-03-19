@@ -70,7 +70,7 @@ export default function Home() {
           : tab === "Teams" ? <TeamsView teams={teams} standings={standings} rosters={rosters} isMobile={isMobile} />
           : tab === "Players" ? <PlayersView players={players} isMobile={isMobile} />
           : (
-            <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-1" : "grid-cols-[1fr_1.2fr_1fr]"}`} style={{ gap: isMobile ? 16 : 24 }}>
+            <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-1" : "grid-cols-[280px_1fr_280px]"}`} style={{ gap: isMobile ? 16 : 24 }}>
               {/* LEFT COLUMN — Articles + Twitter */}
               <div className="flex flex-col gap-5">
                 {hero && <HeroArticle article={hero} isMobile={isMobile} />}
