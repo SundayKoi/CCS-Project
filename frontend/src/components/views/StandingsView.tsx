@@ -72,8 +72,9 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
               const total = s.wins + s.losses;
               const pct = total > 0 ? Math.round((s.wins / total) * 100) : 0;
               const pos = i + 1;
-              const groupPos = groupPositions[s.id] || pos;
-              const scenario = getPlayoffScenario(groupPos);
+              // In "All" view, use overall position; in group view, use group position
+              const scenarioPos = div === "All" ? pos : (groupPositions[s.id] || pos);
+              const scenario = getPlayoffScenario(scenarioPos);
               return (
                 <tr
                   key={s.id}
