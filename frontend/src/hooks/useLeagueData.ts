@@ -46,6 +46,7 @@ export interface Article {
   id: string;
   title: string;
   subtitle?: string;
+  body?: string;
   tag?: string;
   article_type?: string;
   author?: string;
