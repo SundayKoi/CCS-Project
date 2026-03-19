@@ -69,7 +69,7 @@ export default function Admin() {
             <div className="flex items-center gap-2.5">
               <span className="text-xl">⚔️</span>
               <span className="font-display text-xl text-text-bright tracking-widest">
-                CCS<span className="text-accent">LEAGUE</span>
+                CCS
               </span>
               <span className="inline-block px-2 py-0.5 rounded text-[10px] font-heading tracking-wide font-medium uppercase ml-2" style={{ background: "rgba(194,24,91,0.2)", color: "#c2185b" }}>
                 ADMIN

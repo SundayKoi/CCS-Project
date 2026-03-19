@@ -20,7 +20,7 @@ export function NavBar({ active, setActive, isMobile }: Props) {
           <div className="flex items-center gap-2 py-2.5">
             <span className="text-xl">⚔️</span>
             <span className="font-display text-xl text-text-bright tracking-widest">
-              CCS<span className="text-accent">LEAGUE</span>
+              CCS
             </span>
           </div>
           <button onClick={() => setOpen(!open)} className="bg-transparent border-none cursor-pointer p-2 flex flex-col gap-1">
@@ -65,7 +65,7 @@ export function NavBar({ active, setActive, isMobile }: Props) {
       <div className="flex items-center gap-2 mr-8 py-3 min-w-fit">
         <span className="text-[22px]">⚔️</span>
         <span className="font-display text-[22px] text-text-bright tracking-widest">
-          CCS<span className="text-accent">LEAGUE</span>
+          CCS
         </span>
       </div>
       {TABS.map(t => (

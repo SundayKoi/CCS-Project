@@ -31,7 +31,7 @@ export function LoginScreen({ onLogin, toast }: Props) {
         <div className="text-center mb-8 relative">
           <span className="text-4xl">⚔️</span>
           <div className="font-display text-[32px] text-white tracking-widest mt-2">
-            CCS<span className="text-accent">LEAGUE</span>
+            CCS
           </div>
           <div className="font-heading text-xs text-text-dim tracking-widest mt-1 uppercase">Admin Dashboard</div>
         </div>

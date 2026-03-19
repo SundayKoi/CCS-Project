@@ -38,7 +38,7 @@ export default function Home() {
           {split ? `${split.seasons?.name || "SEASON"} · ${split.name}` : "PRESEASON"}
         </span>
         <span className="text-[#0a0a0a] bg-accent rounded font-heading font-semibold tracking-wide cursor-pointer" style={{ fontSize: isMobile ? 9 : 10, padding: "3px 10px" }}>
-          JOIN LEAGUE
+          JOIN CCS
         </span>
       </div>
 
@@ -50,7 +50,7 @@ export default function Home() {
       ) : !teams.length ? (
         <div className="max-w-[500px] mx-auto mt-16 text-center px-5">
           <span className="text-5xl block mb-4">⚔️</span>
-          <h2 className="font-display text-[28px] text-text-bright tracking-widest mb-2">LEAGUE IS BEING SET UP</h2>
+          <h2 className="font-display text-[28px] text-text-bright tracking-widest mb-2">CCS IS BEING SET UP</h2>
           <p className="text-sm text-text-muted leading-relaxed mb-6">Teams and players haven't been added yet.</p>
           <Link to="/admin" className="inline-block bg-accent text-white rounded-md py-3 px-7 text-sm font-heading font-medium tracking-wider no-underline uppercase">
             Open Admin
@@ -118,7 +118,7 @@ export default function Home() {
       )}
 
       <footer className="border-t border-bg3 text-center mt-10" style={{ padding: isMobile ? "20px 12px" : "24px 20px" }}>
-        <span className="font-display text-lg text-text-subtle tracking-widest">CCS<span className="text-accent">LEAGUE</span></span>
+        <span className="font-display text-lg text-text-subtle tracking-widest">CCS</span>
         <div className="text-[10px] text-text-subtle mt-2">Amateur Esports · Community Driven</div>
       </footer>
       {isMobile && <MobileBottomBar active={tab} setActive={setTab} />}
