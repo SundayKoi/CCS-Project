@@ -521,7 +521,12 @@ async function loadFromSupabase(){
   const hdrs={'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'};
   const url=SUPABASE_URL+'/rest/v1/player_game_stats?select=*,players(display_name,riot_game_name),teams:team_id(name,abbreviation),games:game_id(riot_match_id,game_duration,game_started_at,blue_team_id,red_team_id,winner_team_id,blue_total_dragons,blue_total_barons,blue_total_heralds,blue_total_towers,red_total_dragons,red_total_barons,red_total_heralds,red_total_towers,matches:match_id(season_phase,splits:split_id(name,seasons:season_id(name))))&order=created_at.desc&limit=5000';
   const bansUrl=SUPABASE_URL+'/rest/v1/team_bans?select=game_id,team_side,ban_order,champion_name&order=ban_order&limit=5000';
-  const [resp,bansResp]=await Promise.all([fetch(url,{headers:hdrs}),fetch(bansUrl,{headers:hdrs})]);
+  const teamsUrl=SUPABASE_URL+'/rest/v1/teams?select=name,color_primary&is_active=eq.true';
+  const [resp,bansResp,teamsResp]=await Promise.all([fetch(url,{headers:hdrs}),fetch(bansUrl,{headers:hdrs}),fetch(teamsUrl,{headers:hdrs})]);
+  if(teamsResp.ok){
+    const teamsData=await teamsResp.json();
+    teamsData.forEach(function(t){if(t.name&&t.color_primary)TC[t.name]=t.color_primary});
+  }
   if(!resp.ok)throw new Error('Supabase fetch failed: '+resp.status);
   const data=await resp.json();
   const banMap={};
@@ -601,7 +606,7 @@ async function loadFromSupabase(){
 
 const NAME_MERGES={};
 const STATS=[{name:"KDA",key:"kda",fmt:"dec"},{name:"Kills/Game",key:"killsPerGame",fmt:"dec"},{name:"Deaths/Game",key:"deathsPerGame",fmt:"dec",invert:true},{name:"Assists/Game",key:"assistsPerGame",fmt:"dec"},{name:"CS/Min",key:"csPerMin",fmt:"dec"},{name:"Gold/Min",key:"goldPerMin",fmt:"dec"},{name:"Damage/Min",key:"damagePerMin",fmt:"num"},{name:"Vision Score/Min",key:"visionPerMin",fmt:"dec"},{name:"Damage Taken/Game",key:"damageTakenPerGame",fmt:"num"},{name:"Damage Mitigated/Game",key:"damageMitigatedPerGame",fmt:"num"},{name:"Win Rate %",key:"winRate",fmt:"pct"},{name:"Wards Placed/Game",key:"wardsPlacedPerGame",fmt:"dec"},{name:"Wards Killed/Game",key:"wardsKilledPerGame",fmt:"dec"},{name:"Control Wards/Game",key:"controlWardsPerGame",fmt:"dec"},{name:"Turret Kills/Game",key:"turretKillsPerGame",fmt:"dec"},{name:"Turret Damage/Game",key:"turretDamagePerGame",fmt:"num"},{name:"Objective Damage/Game",key:"objectiveDamagePerGame",fmt:"num"},{name:"Team Dragons/Game",key:"teamDragonsPerGame",fmt:"dec"},{name:"Team Barons/Game",key:"teamBaronsPerGame",fmt:"dec"},{name:"Team Heralds/Game",key:"teamHeraldsPerGame",fmt:"dec"},{name:"Team Grubs/Game",key:"teamGrubsPerGame",fmt:"dec"},{name:"Team Towers/Game",key:"teamTowersPerGame",fmt:"dec"},{name:"First Blood Rate %",key:"firstBloodRate",fmt:"pct"},{name:"Total Kills",key:"totalKills",fmt:"int"},{name:"Total Deaths",key:"totalDeaths",fmt:"int",invert:true},{name:"Total Assists",key:"totalAssists",fmt:"int"},{name:"Double Kills",key:"doubleKills",fmt:"int"},{name:"Triple Kills",key:"tripleKills",fmt:"int"},{name:"Quadra Kills",key:"quadraKills",fmt:"int"},{name:"Penta Kills",key:"pentaKills",fmt:"int"},{name:"Games Played",key:"games",fmt:"int"}];
-const TC={"Divine Ascension":"#14b8a6","Gamblers":"#eab308","Astronauts":"#ef4444","TD Phoenix":"#ec4899","The Everstone Elite":"#a855f7","MetaShift":"#3b82f6","Flannel Equinox":"#6366f1","Flannel Banana Bandits":"#f97316","Sub":"#475569"};
+let TC={"Sub":"#475569"};
 const ROLE_MAP={TOP:'Top',JUNGLE:'Jng',MIDDLE:'Mid',BOTTOM:'ADC',UTILITY:'Sup'};
 const ROLE_ICONS={TOP:'⚔',JUNGLE:'🌿',MIDDLE:'✦',BOTTOM:'🏹',UTILITY:'🛡'};
 let PD=[],RAW=[],ROSTER={},curType='top10',comparePlayers=[],curTab='leaderboard';
