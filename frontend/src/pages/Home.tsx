@@ -23,7 +23,7 @@ export default function Home() {
   const w = useWindowSize();
   const isMobile = w < 768;
   const isTablet = w >= 768 && w < 1024;
-  const { teams, matches, standings, players, rosters, articles, splits, twitterFeeds, twitchEmbeds, loading, refresh } = useLeagueData();
+  const { teams, matches, standings, players, rosters, articles, splits, games, twitterFeeds, twitchEmbeds, loading, refresh } = useLeagueData();
   const hasLive = matches.some(m => m.status === "live");
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -78,7 +78,7 @@ export default function Home() {
         <div className="max-w-[1440px] mx-auto" style={{ padding: isMobile ? 12 : "24px 32px" }}>
           {tab === "Scores" ? <ScoresView matches={matches} isMobile={isMobile} />
           : tab === "Schedule" ? <ScheduleView matches={matches} isMobile={isMobile} />
-          : tab === "Standings" ? <StandingsView standings={standings} teams={teams} isMobile={isMobile} />
+          : tab === "Standings" ? <StandingsView standings={standings} teams={teams} matches={matches} games={games} isMobile={isMobile} />
           : tab === "Teams" ? <TeamsView teams={teams} standings={standings} rosters={rosters} isMobile={isMobile} />
           : tab === "Players" ? <PlayersView players={players} isMobile={isMobile} />
           : (
@@ -121,7 +121,7 @@ export default function Home() {
 
               {/* RIGHT COLUMN — Standings + Stats */}
               <div className="flex flex-col gap-5">
-                <StandingsWidget standings={standings} teams={teams} />
+                <StandingsWidget standings={standings} teams={teams} matches={matches} games={games} />
                 <PlayerLeaders players={players} isMobile={isMobile} />
               </div>
             </div>

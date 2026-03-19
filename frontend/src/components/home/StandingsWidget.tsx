@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { TeamBadge } from "../TeamBadge";
 import { getPlayoffScenario } from "../../lib/playoffScenarios";
-import type { Standing, Team } from "../../hooks/useLeagueData";
+import { buildGameRecords, sortStandingsWithTiebreakers } from "../../lib/tiebreakers";
+import type { Standing, Team, Match, Game } from "../../hooks/useLeagueData";
 
 interface Props {
   standings: Standing[];
   teams: Team[];
+  matches: Match[];
+  games: Game[];
 }
 
-export function StandingsWidget({ standings, teams }: Props) {
+export function StandingsWidget({ standings, teams, matches, games }: Props) {
   const divs = [...new Set(standings.map(s => s.teams?.divisions?.name).filter(Boolean))] as string[];
   const [div, setDiv] = useState(divs[0] || "All");
   const filtered = div === "All" ? standings : standings.filter(s => s.teams?.divisions?.name === div);
-  const sorted = [...filtered].sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+  const gameRecords = buildGameRecords(games);
+  const sorted = sortStandingsWithTiebreakers(filtered, matches, gameRecords);
 
   // Compute per-group positions for scenario mapping
   const groupPositions: Record<string, number> = {};
