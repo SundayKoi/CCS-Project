@@ -10,6 +10,10 @@ export function ThemeToggle() {
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem("theme", next);
     setTheme(next);
+    // Sync theme to any embedded iframes (stats page)
+    document.querySelectorAll("iframe").forEach(f => {
+      try { f.contentWindow?.postMessage({ type: "theme-change", theme: next }, "*"); } catch {}
+    });
   };
 
   return (

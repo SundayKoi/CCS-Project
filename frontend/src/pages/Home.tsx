@@ -58,7 +58,7 @@ export default function Home() {
         </div>
       ) : tab === "Stats" ? (
         <iframe
-          src="/stats.html"
+          src="/stats.html?embed=1"
           className="w-full border-0"
           style={{ height: "calc(100vh - 100px)", minHeight: 600 }}
           title="CCS League Stats"

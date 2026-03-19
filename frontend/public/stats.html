@@ -13,6 +13,8 @@
 
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Source Sans 3',sans-serif;min-height:100vh;overflow-x:hidden}
+body.embedded .site-nav{display:none}
+body.embedded .hdr{padding-top:16px}
 
 .wrap{max-width:1100px;margin:0 auto;padding:16px;position:relative}
 
@@ -394,6 +396,25 @@ body{background:var(--bg);color:var(--text);font-family:'Source Sans 3',sans-ser
 </style>
 </head>
 <body>
+<script>
+(function(){
+  var p = new URLSearchParams(window.location.search);
+  if (p.get('embed') === '1') {
+    document.body.classList.add('embedded');
+    // Sync theme from parent
+    try {
+      var t = window.parent.document.documentElement.getAttribute('data-theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {}
+    // Listen for theme changes from parent
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'theme-change') {
+        document.documentElement.setAttribute('data-theme', e.data.theme);
+      }
+    });
+  }
+})();
+</script>
 <nav class="site-nav">
   <a href="/" class="nav-brand">
     <span class="brand-icon">⚔️</span>
