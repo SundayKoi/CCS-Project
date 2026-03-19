@@ -77,15 +77,21 @@ export function StandingsWidget({ standings, teams }: Props) {
             const pos = i + 1;
             const groupPos = groupPositions[s.id] || pos;
             const scenario = getPlayoffScenario(groupPos);
+            const tierBreaks = [1, 3, 4, 5, 6];
+            const showTierBreak = tierBreaks.includes(groupPos);
             return (
               <tr
                 key={s.id}
                 className="cursor-pointer"
-                style={scenario ? { borderLeft: `3px solid ${scenario.borderColor}` } : undefined}
+                style={{
+                  borderLeft: scenario ? `4px solid ${scenario.borderColor}` : undefined,
+                  background: scenario ? scenario.bgColor : undefined,
+                  borderBottom: showTierBreak ? `2px solid ${scenario?.borderColor || "var(--border)"}` : undefined,
+                }}
               >
-                <td className="px-3.5 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-[9px] text-text-dim font-mono min-w-[14px] text-right">{pos}</span>
+                <td className="px-3.5 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono min-w-[14px] text-right font-bold" style={{ color: scenario?.color || "var(--text-dim)" }}>{pos}</span>
                     <TeamBadge team={t} />
                     <div className="flex flex-col min-w-0">
                       <span className="font-heading text-[13px] text-text font-medium">{t.name}</span>
