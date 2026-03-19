@@ -36,7 +36,7 @@ export function ArticlesTab({ toast }: Props) {
     setUploading(true);
     try {
       const path = `${Date.now()}_${(form.title || "article").toLowerCase().replace(/\s+/g, "-").slice(0, 30)}.${ext}`;
-      const publicUrl = await uploadFile("article-images", path, file);
+      const publicUrl = await uploadFile("articles_images", path, file);
       setForm(f => ({ ...f, image_url: publicUrl }));
       toast("Image uploaded", "success");
     } catch (err: any) { toast(err.message, "error"); }
