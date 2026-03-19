@@ -108,6 +108,28 @@ export interface Game {
   game_started_at?: string;
 }
 
+export interface TwitterFeed {
+  id: string;
+  feed_type: "timeline" | "tweet";
+  handle?: string;
+  tweet_url?: string;
+  title?: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at?: string;
+}
+
+export interface TwitchEmbed {
+  id: string;
+  embed_type: "channel" | "clip";
+  channel_name?: string;
+  clip_url?: string;
+  title?: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at?: string;
+}
+
 export interface LeagueData {
   teams: Team[];
   matches: Match[];
@@ -117,13 +139,16 @@ export interface LeagueData {
   articles: Article[];
   splits: Split[];
   games: Game[];
+  twitterFeeds: TwitterFeed[];
+  twitchEmbeds: TwitchEmbed[];
   loading: boolean;
 }
 
 export function useLeagueData(): LeagueData {
   const [data, setData] = useState<LeagueData>({
     teams: [], matches: [], standings: [], players: [], rosters: [],
-    articles: [], splits: [], games: [], loading: true,
+    articles: [], splits: [], games: [], twitterFeeds: [], twitchEmbeds: [],
+    loading: true,
   });
 
   const load = useCallback(async () => {
@@ -139,15 +164,21 @@ export function useLeagueData(): LeagueData {
       let players: Player[] = [];
       let rosters: Roster[] = [];
       let games: Game[] = [];
+      let twitterFeeds: TwitterFeed[] = [];
+      let twitchEmbeds: TwitchEmbed[] = [];
 
       try {
-        const [roster, stats, gamesData] = await Promise.all([
+        const [roster, stats, gamesData, twFeeds, twEmbeds] = await Promise.all([
           db("rosters", { query: "?select=*,players(id,display_name,riot_game_name,riot_tag_line),teams(id,name,abbreviation,color_primary,color_accent)&left_at=is.null" }),
           db("player_game_stats", { query: "?select=player_id,kills,deaths,assists,total_minions_killed,neutral_minions_killed,vision_score,total_damage_dealt_to_champions,gold_earned,win,is_mvp" }),
           db("games", { query: "?select=id,match_id,riot_match_id,blue_team_id,red_team_id,winner_team_id,game_duration,game_started_at&order=game_started_at.desc.nullslast&limit=50" }),
+          db("twitter_feeds", { query: "?select=*&is_active=eq.true&order=sort_order,created_at.desc" }),
+          db("twitch_embeds", { query: "?select=*&is_active=eq.true&order=sort_order,created_at.desc" }),
         ]);
         rosters = roster || [];
         games = gamesData || [];
+        twitterFeeds = twFeeds || [];
+        twitchEmbeds = twEmbeds || [];
 
         const agg: Record<string, { gp: number; kills: number; deaths: number; assists: number; cs: number; wins: number; mvps: number; damage: number; gold: number }> = {};
         (stats || []).forEach((s: Record<string, number | boolean>) => {
@@ -187,7 +218,7 @@ export function useLeagueData(): LeagueData {
       setData({
         teams: teams || [], matches: matches || [], standings: standings || [],
         players, rosters, articles: articles || [], splits: splits || [],
-        games: games || [], loading: false,
+        games: games || [], twitterFeeds, twitchEmbeds, loading: false,
       });
     } catch (e) {
       console.error(e);

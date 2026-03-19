@@ -11,6 +11,8 @@ import { PlayerLeaders } from "../components/home/PlayerLeaders";
 import { UpcomingSchedule } from "../components/home/UpcomingSchedule";
 import { QuickLinks } from "../components/home/QuickLinks";
 import { MobileBottomBar } from "../components/home/MobileBottomBar";
+import { TwitterFeedSection } from "../components/home/TwitterFeed";
+import { TwitchStreams } from "../components/home/TwitchStreams";
 import { ScoresView } from "../components/views/ScoresView";
 import { ScheduleView } from "../components/views/ScheduleView";
 import { StandingsView } from "../components/views/StandingsView";
@@ -23,7 +25,8 @@ export default function Home() {
   const w = useWindowSize();
   const isMobile = w < 768;
   const isTablet = w >= 768 && w < 1024;
-  const { teams, matches, standings, players, rosters, articles, splits, loading } = useLeagueData();
+  const { teams, matches, standings, players, rosters, articles, splits, twitterFeeds, twitchEmbeds, loading } = useLeagueData();
+  const parentDomain = window.location.hostname;
   const split = splits[0];
   const hero = articles.find(a => a.article_type === "hero");
   const rest = articles.filter(a => a.id !== hero?.id);
@@ -90,6 +93,11 @@ export default function Home() {
                       <span className="text-text-dim text-[13px]">No news yet. Publish articles from the admin dashboard.</span>
                     </div>
                   )}
+                </div>
+                {/* Social Feeds */}
+                <div className="flex flex-col gap-5 mt-5">
+                  <TwitterFeedSection feeds={twitterFeeds} />
+                  <TwitchStreams embeds={twitchEmbeds} parentDomain={parentDomain} />
                 </div>
               </div>
               <div className="flex flex-col gap-5">
