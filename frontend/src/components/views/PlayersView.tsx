@@ -47,12 +47,16 @@ export function PlayersView({ players, isMobile }: Props) {
               key={p.id || i}
               className={`flex items-center ${i < filtered.length - 1 ? "border-b border-border" : ""} ${isMobile ? "gap-2.5 p-3" : "gap-3.5 px-[18px] py-3"}`}
             >
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-xs text-white font-bold font-heading shrink-0"
-                style={{ background: p.team ? `linear-gradient(135deg, ${p.team.color_primary || "#333"}, ${p.team.color_accent || "#555"})` : "var(--border3)" }}
-              >
-                {teamInitial(p.team?.name)}
-              </div>
+              {p.team?.logo_url ? (
+                <img src={p.team.logo_url} alt={p.team.name || ""} className="w-9 h-9 rounded-full object-contain shrink-0" />
+              ) : (
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs text-white font-bold font-heading shrink-0"
+                  style={{ background: p.team ? `linear-gradient(135deg, ${p.team.color_primary || "#333"}, ${p.team.color_accent || "#555"})` : "var(--border3)" }}
+                >
+                  {teamInitial(p.team?.name)}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="font-heading text-sm text-text font-medium">
                   {p.name}

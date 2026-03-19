@@ -157,7 +157,7 @@ export function useLeagueData(): LeagueData {
       const [teams, matches, standings, articles, splits] = await Promise.all([
         db("teams", { query: "?select=*,divisions(name)&is_active=eq.true&order=name" }),
         db("matches", { query: "?select=*,team_blue:teams!matches_team_blue_id_fkey(id,name,abbreviation,color_primary,color_accent,logo_url),team_red:teams!matches_team_red_id_fkey(id,name,abbreviation,color_primary,color_accent,logo_url)&order=scheduled_at.desc.nullslast&limit=50" }),
-        db("standings", { query: "?select=*,teams(id,name,abbreviation,color_primary,color_accent,divisions(name))&order=wins.desc" }),
+        db("standings", { query: "?select=*,teams(id,name,abbreviation,color_primary,color_accent,logo_url,divisions(name))&order=wins.desc" }),
         db("articles", { query: "?select=*&is_published=eq.true&order=published_at.desc.nullslast&limit=10" }),
         db("splits", { query: "?select=*,seasons(name)&is_active=eq.true&limit=1" }),
       ]);
