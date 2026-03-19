@@ -9,7 +9,6 @@ import { NewsFeed } from "../components/home/NewsFeed";
 import { StandingsWidget } from "../components/home/StandingsWidget";
 import { PlayerLeaders } from "../components/home/PlayerLeaders";
 import { UpcomingSchedule } from "../components/home/UpcomingSchedule";
-import { QuickLinks } from "../components/home/QuickLinks";
 import { MobileBottomBar } from "../components/home/MobileBottomBar";
 import { TwitterFeedSection } from "../components/home/TwitterFeed";
 import { TwitchStreams } from "../components/home/TwitchStreams";
@@ -64,53 +63,52 @@ export default function Home() {
           title="CCS Stats"
         />
       ) : (
-        <div className="max-w-[1280px] mx-auto" style={{ padding: isMobile ? 12 : "24px 32px" }}>
+        <div className="max-w-[1440px] mx-auto" style={{ padding: isMobile ? 12 : "24px 32px" }}>
           {tab === "Scores" ? <ScoresView matches={matches} isMobile={isMobile} />
           : tab === "Schedule" ? <ScheduleView matches={matches} isMobile={isMobile} />
           : tab === "Standings" ? <StandingsView standings={standings} teams={teams} isMobile={isMobile} />
           : tab === "Teams" ? <TeamsView teams={teams} standings={standings} rosters={rosters} isMobile={isMobile} />
           : tab === "Players" ? <PlayersView players={players} isMobile={isMobile} />
           : (
-            <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-[1fr_300px]" : "grid-cols-[1fr_360px]"}`} style={{ gap: isMobile ? 16 : 28 }}>
-              <div>
-                {hero ? (
-                  <HeroArticle article={hero} isMobile={isMobile} />
-                ) : (
-                  <div className="rounded-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #6B21A8 0%, #1E1B4B 100%)", padding: isMobile ? "24px 16px" : "40px 28px" }}>
+            <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-1" : "grid-cols-[1fr_1.2fr_1fr]"}`} style={{ gap: isMobile ? 16 : 24 }}>
+              {/* LEFT COLUMN — Articles + Twitter */}
+              <div className="flex flex-col gap-5">
+                {hero && <HeroArticle article={hero} isMobile={isMobile} />}
+                {rest.length > 0 && (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span className="font-display text-text-bright tracking-widest" style={{ fontSize: isMobile ? 16 : 18 }}>TOP STORIES</span>
+                    </div>
+                    <NewsFeed articles={rest} isMobile={isMobile} />
+                  </>
+                )}
+                {!articles.length && (
+                  <div className="bg-bg2 rounded-md border border-border p-6 text-center">
+                    <span className="text-text-dim text-[13px]">No news yet. Publish articles from the admin dashboard.</span>
+                  </div>
+                )}
+                <TwitterFeedSection feeds={twitterFeeds} />
+              </div>
+
+              {/* MIDDLE COLUMN — Welcome banner + Streams/VODs */}
+              <div className="flex flex-col gap-5">
+                {!hero && (
+                  <div className="rounded-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #6B21A8 0%, #1E1B4B 100%)", padding: isMobile ? "24px 16px" : "32px 24px" }}>
                     <div className="absolute inset-0 opacity-50" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
                     <div className="relative">
-                      <h2 className="font-display text-white tracking-wider mb-2" style={{ fontSize: isMobile ? 24 : 32 }}>WELCOME TO CCS</h2>
+                      <h2 className="font-display text-white tracking-wider mb-2" style={{ fontSize: isMobile ? 22 : 28 }}>WELCOME TO CCS</h2>
                       <p className="text-text-secondary text-sm">{teams.length} teams registered · {split?.name || "Season starting soon"}</p>
                     </div>
                   </div>
                 )}
-                <div style={{ marginTop: isMobile ? 16 : 20 }}>
-                  {rest.length > 0 && (
-                    <>
-                      <div className="flex justify-between items-center mb-3.5">
-                        <span className="font-display text-text-bright tracking-widest" style={{ fontSize: isMobile ? 18 : 20 }}>TOP STORIES</span>
-                      </div>
-                      <NewsFeed articles={rest} isMobile={isMobile} />
-                    </>
-                  )}
-                  {!articles.length && (
-                    <div className="bg-bg2 rounded-md border border-border p-6 text-center">
-                      <span className="text-text-dim text-[13px]">No news yet. Publish articles from the admin dashboard.</span>
-                    </div>
-                  )}
-                </div>
-                {/* Social Feeds */}
-                <div className="flex flex-col gap-5 mt-5">
-                  <TwitterFeedSection feeds={twitterFeeds} />
-                  <TwitchStreams embeds={twitchEmbeds} parentDomain={parentDomain} />
-                </div>
+                <TwitchStreams embeds={twitchEmbeds} parentDomain={parentDomain} />
+                <UpcomingSchedule matches={matches} isMobile={isMobile} />
               </div>
+
+              {/* RIGHT COLUMN — Standings + Stats */}
               <div className="flex flex-col gap-5">
                 <StandingsWidget standings={standings} teams={teams} />
                 <PlayerLeaders players={players} isMobile={isMobile} />
-                {isMobile && <QuickLinks isMobile={isMobile} />}
-                <UpcomingSchedule matches={matches} isMobile={isMobile} />
-                {!isMobile && <QuickLinks isMobile={isMobile} />}
               </div>
             </div>
           )}
