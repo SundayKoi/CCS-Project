@@ -63,7 +63,7 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
                 </th>
               ))}
               {!isMobile && <th className="px-3.5 py-3 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border">DIVISION</th>}
-              {true && <th className="px-3.5 py-3 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border">SCENARIO</th>}
+              <th className="px-3.5 py-3 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border">SCENARIO</th>
             </tr>
           </thead>
           <tbody>
@@ -72,17 +72,22 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
               const total = s.wins + s.losses;
               const pct = total > 0 ? Math.round((s.wins / total) * 100) : 0;
               const pos = i + 1;
-              // In "All" view, use overall position; in group view, use group position
-              const scenarioPos = div === "All" ? pos : (groupPositions[s.id] || pos);
-              const scenario = getPlayoffScenario(scenarioPos);
+              const groupPos = groupPositions[s.id] || pos;
+              const scenario = getPlayoffScenario(groupPos);
+              // Tier separator: thick line between playoff tiers
+              const tierBreaks = [1, 3, 4, 5, 6]; // after these positions
+              const showTierBreak = tierBreaks.includes(groupPos);
               return (
                 <tr
                   key={s.id}
-                  className="border-b border-bg3"
-                  style={scenario ? { borderLeft: `3px solid ${scenario.borderColor}` } : undefined}
+                  style={{
+                    borderLeft: scenario ? `4px solid ${scenario.borderColor}` : undefined,
+                    background: scenario ? scenario.bgColor : undefined,
+                    borderBottom: showTierBreak ? `2px solid ${scenario?.borderColor || "var(--border)"}` : undefined,
+                  }}
                 >
-                  <td className={`px-3.5 py-3 font-display text-base ${i < 3 ? "text-accent" : "text-text-dim"}`}>{pos}</td>
-                  <td className="px-3.5 py-3">
+                  <td className="px-3.5 py-3.5 font-display text-lg" style={{ color: scenario?.color || "var(--text-dim)" }}>{pos}</td>
+                  <td className="px-3.5 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <TeamBadge team={t} size={28} />
                       <div>
@@ -91,25 +96,24 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
                       </div>
                     </div>
                   </td>
-                  <td className="px-3.5 py-3 text-center font-mono text-sm text-ccs-green font-bold">{s.wins}</td>
-                  <td className="px-3.5 py-3 text-center font-mono text-sm text-ccs-red font-bold">{s.losses}</td>
-                  <td className="px-3.5 py-3 text-center font-mono text-[13px] text-text-secondary">{pct}%</td>
-                  <td className={`px-3.5 py-3 text-center font-mono text-[13px] font-bold ${(s.streak || "").startsWith("W") ? "text-ccs-green" : "text-ccs-red"}`}>
+                  <td className="px-3.5 py-3.5 text-center font-mono text-sm text-ccs-green font-bold">{s.wins}</td>
+                  <td className="px-3.5 py-3.5 text-center font-mono text-sm text-ccs-red font-bold">{s.losses}</td>
+                  <td className="px-3.5 py-3.5 text-center font-mono text-[13px] text-text-secondary">{pct}%</td>
+                  <td className={`px-3.5 py-3.5 text-center font-mono text-[13px] font-bold ${(s.streak || "").startsWith("W") ? "text-ccs-green" : "text-ccs-red"}`}>
                     {s.streak || "—"}
                   </td>
-                  {!isMobile && <td className="px-3.5 py-3 text-xs text-text-muted">{t.divisions?.name || "—"}</td>}
-                  {true && (
-                    <td className="px-3.5 py-3">
-                      {scenario && (
-                        <span
-                          className="inline-block px-2 py-0.5 rounded text-[10px] font-heading tracking-wider uppercase font-medium"
-                          style={{ background: scenario.bgColor, color: scenario.color }}
-                        >
-                          {scenario.label}
-                        </span>
-                      )}
-                    </td>
-                  )}
+                  {!isMobile && <td className="px-3.5 py-3.5 text-xs text-text-muted">{t.divisions?.name || "—"}</td>}
+                  <td className="px-3.5 py-3.5">
+                    {scenario && (
+                      <span
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-heading tracking-wider uppercase font-semibold"
+                        style={{ background: scenario.bgColor, color: scenario.color, border: `1px solid ${scenario.borderColor}40` }}
+                      >
+                        <span className="w-2 h-2 rounded-full" style={{ background: scenario.color }} />
+                        {scenario.label}
+                      </span>
+                    )}
+                  </td>
                 </tr>
               );
             })}
@@ -118,30 +122,35 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
       </div>
 
       {/* Legend */}
-      {true && (
-        <div className="mt-4 bg-bg2 border border-border rounded-md p-4">
-          <div className="font-display text-[13px] text-text-bright tracking-widest mb-3">PLAYOFF SCENARIOS</div>
-          <div className="grid grid-cols-2 gap-2" style={{ maxWidth: 500 }}>
+      <div className="mt-4 bg-bg2 border border-border rounded-md overflow-hidden">
+        <div className="px-4 py-3 border-b border-border">
+          <span className="font-display text-[14px] text-text-bright tracking-widest">GROUP RESULTS → PLAYOFF SEEDING</span>
+        </div>
+        <div className="p-4">
+          <div className="flex flex-col gap-1.5">
             {[
-              { pos: "1st", label: "Upper Bracket Bye", color: "var(--gold)", bg: "rgba(212,160,23,0.15)" },
-              { pos: "2nd-3rd", label: "Upper Bracket", color: "var(--green)", bg: "rgba(16,185,129,0.15)" },
-              { pos: "4th", label: "Lower Bracket Bye", color: "var(--blue)", bg: "rgba(59,130,246,0.15)" },
-              { pos: "5th", label: "Lower Bracket", color: "var(--blue)", bg: "rgba(59,130,246,0.10)" },
-              { pos: "6th", label: "Gauntlet Qualifier", color: "var(--orange)", bg: "rgba(245,158,11,0.12)" },
-              { pos: "7th-8th", label: "Gauntlet Prelim", color: "var(--red)", bg: "rgba(239,68,68,0.12)" },
+              { pos: "1st", label: "Upper Bracket Bye", desc: "Advances directly to UB Round 2", color: "var(--gold)", bg: "rgba(212,160,23,0.15)", border: "rgba(212,160,23,0.3)" },
+              { pos: "2nd-3rd", label: "Upper Bracket", desc: "Starts in Upper Bracket Round 1", color: "var(--green)", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)" },
+              { pos: "4th", label: "Lower Bracket Bye", desc: "Advances directly to LB Round 2", color: "var(--blue)", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)" },
+              { pos: "5th", label: "Lower Bracket", desc: "Starts in Lower Bracket Round 1", color: "var(--blue)", bg: "rgba(59,130,246,0.10)", border: "rgba(59,130,246,0.2)" },
+              { pos: "6th", label: "Gauntlet Qualifier", desc: "Bo3 vs Gauntlet Prelim winner", color: "var(--orange)", bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.25)" },
+              { pos: "7th-8th", label: "Gauntlet Prelim", desc: "Bo1 cross-group elimination", color: "var(--red)", bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.25)" },
             ].map(s => (
-              <div key={s.pos} className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-sm shrink-0" style={{ background: s.color }} />
-                <span className="text-[11px] text-text-secondary">
-                  <span className="font-mono font-bold" style={{ color: s.color }}>{s.pos}</span>
-                  {" — "}
-                  <span className="font-heading">{s.label}</span>
-                </span>
+              <div
+                key={s.pos}
+                className="flex items-center gap-3 px-3 py-2 rounded"
+                style={{ background: s.bg, borderLeft: `3px solid ${s.color}` }}
+              >
+                <span className="font-mono text-[12px] font-bold min-w-[40px]" style={{ color: s.color }}>{s.pos}</span>
+                <div className="flex-1">
+                  <span className="font-heading text-[12px] font-semibold tracking-wider uppercase" style={{ color: s.color }}>{s.label}</span>
+                  {!isMobile && <span className="text-[10px] text-text-muted ml-2">— {s.desc}</span>}
+                </div>
               </div>
             ))}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
