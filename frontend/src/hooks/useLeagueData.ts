@@ -156,7 +156,7 @@ export function useLeagueData(): LeagueData {
     try {
       const [teams, matches, standings, articles, splits] = await Promise.all([
         db("teams", { query: "?select=*,divisions(name)&is_active=eq.true&order=name" }),
-        db("matches", { query: "?select=*,team_blue:teams!matches_team_blue_id_fkey(id,name,abbreviation,color_primary,color_accent),team_red:teams!matches_team_red_id_fkey(id,name,abbreviation,color_primary,color_accent)&order=scheduled_at.desc.nullslast&limit=50" }),
+        db("matches", { query: "?select=*,team_blue:teams!matches_team_blue_id_fkey(id,name,abbreviation,color_primary,color_accent,logo_url),team_red:teams!matches_team_red_id_fkey(id,name,abbreviation,color_primary,color_accent,logo_url)&order=scheduled_at.desc.nullslast&limit=50" }),
         db("standings", { query: "?select=*,teams(id,name,abbreviation,color_primary,color_accent,divisions(name))&order=wins.desc" }),
         db("articles", { query: "?select=*&is_published=eq.true&order=published_at.desc.nullslast&limit=10" }),
         db("splits", { query: "?select=*,seasons(name)&is_active=eq.true&limit=1" }),
@@ -170,7 +170,7 @@ export function useLeagueData(): LeagueData {
 
       try {
         const [roster, stats, gamesData, twFeeds, twEmbeds] = await Promise.all([
-          db("rosters", { query: "?select=*,players(id,display_name,riot_game_name,riot_tag_line),teams(id,name,abbreviation,color_primary,color_accent)&left_at=is.null" }),
+          db("rosters", { query: "?select=*,players(id,display_name,riot_game_name,riot_tag_line),teams(id,name,abbreviation,color_primary,color_accent,logo_url)&left_at=is.null" }),
           db("player_game_stats", { query: "?select=player_id,kills,deaths,assists,total_minions_killed,neutral_minions_killed,vision_score,total_damage_dealt_to_champions,gold_earned,win,is_mvp" }),
           db("games", { query: "?select=id,match_id,riot_match_id,blue_team_id,red_team_id,winner_team_id,game_duration,game_started_at&order=game_started_at.desc.nullslast&limit=50" }),
           db("twitter_feeds", { query: "?select=*&is_active=eq.true&order=sort_order,created_at.desc" }),
