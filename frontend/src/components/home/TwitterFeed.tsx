@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface TwitterFeed {
   id: string;
@@ -17,47 +17,123 @@ interface Props {
 declare global {
   interface Window {
     twttr?: {
-      widgets?: {
+      widgets: {
         load: (el?: HTMLElement) => void;
+        createTimeline: (
+          source: { sourceType: string; screenName: string },
+          target: HTMLElement,
+          options?: Record<string, unknown>
+        ) => Promise<HTMLElement>;
+        createTweet: (
+          tweetId: string,
+          target: HTMLElement,
+          options?: Record<string, unknown>
+        ) => Promise<HTMLElement>;
       };
     };
   }
 }
 
 function extractTweetId(url: string): string | null {
-  const parts = url.split("/");
-  for (let i = parts.length - 1; i >= 0; i--) {
-    if (/^\d+$/.test(parts[i])) return parts[i];
-  }
-  return null;
+  const match = url.match(/status\/(\d+)/);
+  return match ? match[1] : null;
+}
+
+function loadTwitterScript(): Promise<void> {
+  return new Promise((resolve) => {
+    if (window.twttr?.widgets) {
+      resolve();
+      return;
+    }
+    const existing = document.getElementById("twitter-wjs");
+    if (existing) {
+      // Script tag exists but not loaded yet, wait for it
+      const check = setInterval(() => {
+        if (window.twttr?.widgets) { clearInterval(check); resolve(); }
+      }, 100);
+      setTimeout(() => { clearInterval(check); resolve(); }, 5000);
+      return;
+    }
+    const script = document.createElement("script");
+    script.id = "twitter-wjs";
+    script.src = "https://platform.twitter.com/widgets.js";
+    script.async = true;
+    script.onload = () => {
+      const check = setInterval(() => {
+        if (window.twttr?.widgets) { clearInterval(check); resolve(); }
+      }, 100);
+      setTimeout(() => { clearInterval(check); resolve(); }, 5000);
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function TimelineEmbed({ handle }: { handle: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadTwitterScript().then(() => {
+      if (cancelled || !ref.current || !window.twttr?.widgets) return;
+      ref.current.innerHTML = "";
+      window.twttr.widgets
+        .createTimeline(
+          { sourceType: "profile", screenName: handle },
+          ref.current,
+          { theme: "dark", chrome: "noheader nofooter noborders transparent", height: 450, dnt: true }
+        )
+        .then(() => { if (!cancelled) setLoaded(true); })
+        .catch(() => {});
+    });
+    return () => { cancelled = true; };
+  }, [handle]);
+
+  return (
+    <div>
+      <div ref={ref} className="min-h-[100px]" />
+      {!loaded && (
+        <div className="text-text-dim text-xs py-4 text-center">Loading @{handle} timeline...</div>
+      )}
+    </div>
+  );
+}
+
+function TweetEmbed({ tweetUrl }: { tweetUrl: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const tweetId = extractTweetId(tweetUrl);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!tweetId) return;
+    let cancelled = false;
+    loadTwitterScript().then(() => {
+      if (cancelled || !ref.current || !window.twttr?.widgets) return;
+      ref.current.innerHTML = "";
+      window.twttr.widgets
+        .createTweet(tweetId, ref.current, { theme: "dark", dnt: true })
+        .then(() => { if (!cancelled) setLoaded(true); })
+        .catch(() => {});
+    });
+    return () => { cancelled = true; };
+  }, [tweetId]);
+
+  if (!tweetId) return null;
+
+  return (
+    <div>
+      <div ref={ref} />
+      {!loaded && (
+        <div className="text-text-dim text-xs py-2 text-center">Loading tweet...</div>
+      )}
+    </div>
+  );
 }
 
 export function TwitterFeedSection({ feeds }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const activeFeeds = feeds
     .filter((f) => f.is_active)
     .sort((a, b) => a.sort_order - b.sort_order);
-
-  useEffect(() => {
-    if (activeFeeds.length === 0) return;
-
-    const scriptId = "twitter-widgets-js";
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement("script");
-      script.id = scriptId;
-      script.src = "https://platform.twitter.com/widgets.js";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-
-    // Give the script time to load, then trigger widget rendering
-    const timer = setTimeout(() => {
-      window.twttr?.widgets?.load(containerRef.current ?? undefined);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [activeFeeds]);
 
   if (activeFeeds.length === 0) return null;
 
@@ -68,47 +144,30 @@ export function TwitterFeedSection({ feeds }: Props) {
           LATEST FROM X
         </span>
       </div>
-      <div ref={containerRef} className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-4 p-4">
         {activeFeeds.map((feed) => {
           if (feed.feed_type === "timeline" && feed.handle) {
             return (
               <div key={feed.id}>
                 {feed.title && (
-                  <p className="text-xs text-text-muted font-display tracking-wider mb-2">
-                    {feed.title}
+                  <p className="text-xs text-text-muted font-heading tracking-wider mb-2 uppercase">
+                    @{feed.handle}
                   </p>
                 )}
-                <a
-                  className="twitter-timeline"
-                  href={`https://twitter.com/${feed.handle}`}
-                  data-theme="dark"
-                  data-chrome="noheader nofooter"
-                  data-height="400"
-                >
-                  Tweets by @{feed.handle}
-                </a>
+                <TimelineEmbed handle={feed.handle} />
               </div>
             );
           }
 
           if (feed.feed_type === "tweet" && feed.tweet_url) {
-            const tweetId = extractTweetId(feed.tweet_url);
-            if (!tweetId) return null;
-
             return (
               <div key={feed.id}>
                 {feed.title && (
-                  <p className="text-xs text-text-muted font-display tracking-wider mb-2">
+                  <p className="text-xs text-text-muted font-heading tracking-wider mb-2 uppercase">
                     {feed.title}
                   </p>
                 )}
-                <iframe
-                  src={`https://platform.twitter.com/embed/Tweet.html?id=${tweetId}&theme=dark`}
-                  className="w-full border-0 rounded-md"
-                  height="250"
-                  allowFullScreen
-                  title={feed.title || `Tweet ${tweetId}`}
-                />
+                <TweetEmbed tweetUrl={feed.tweet_url} />
               </div>
             );
           }
