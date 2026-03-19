@@ -93,7 +93,7 @@ export default function Home() {
               {/* MIDDLE COLUMN — Welcome banner + Streams/VODs */}
               <div className="flex flex-col gap-5">
                 {!hero && (
-                  <div className="rounded-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, #6B21A8 0%, #1E1B4B 100%)", padding: isMobile ? "14px 12px" : "16px 20px" }}>
+                  <div className="rounded-lg relative overflow-hidden" style={{ background: "var(--bg2)", border: "1px solid var(--border)", padding: isMobile ? "14px 12px" : "16px 20px" }}>
                     <div className="relative flex items-center gap-3">
                       <span className="text-lg">⚔️</span>
                       <div>
