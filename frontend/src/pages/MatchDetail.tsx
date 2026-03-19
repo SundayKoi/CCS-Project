@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../lib/supabase";
 import { TeamBadge } from "../components/TeamBadge";
 
@@ -72,6 +72,7 @@ function formatDuration(seconds: number | null): string {
 
 export default function MatchDetail() {
   const { matchId } = useParams<{ matchId: string }>();
+  const navigate = useNavigate();
   const [match, setMatch] = useState<MatchData | null>(null);
   const [games, setGames] = useState<Game[]>([]);
   const [stats, setStats] = useState<PlayerStat[]>([]);
@@ -147,7 +148,7 @@ export default function MatchDetail() {
     return (
       <div className="bg-bg min-h-screen w-full text-text font-body flex flex-col items-center justify-center gap-4">
         <div className="text-text-muted font-heading tracking-wider text-sm">{error || "Match not found."}</div>
-        <Link to="/" className="text-ccs-green font-heading text-sm hover:underline">&larr; Back to Home</Link>
+        <button onClick={() => navigate(-1)} className="text-ccs-green font-heading text-sm hover:underline bg-transparent border-none cursor-pointer">&larr; Back</button>
       </div>
     );
   }
@@ -162,9 +163,9 @@ export default function MatchDetail() {
       {/* Top bar */}
       <div className="bg-bg border-b border-bg2 px-4 py-3">
         <div className="max-w-[960px] mx-auto">
-          <Link to="/" className="text-ccs-green font-heading text-xs tracking-wider hover:underline">
-            &larr; BACK TO HOME
-          </Link>
+          <button onClick={() => navigate(-1)} className="text-ccs-green font-heading text-xs tracking-wider hover:underline bg-transparent border-none cursor-pointer">
+            &larr; BACK TO SCORES
+          </button>
         </div>
       </div>
 
