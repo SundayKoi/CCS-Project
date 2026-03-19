@@ -14,8 +14,18 @@ export function StandingsWidget({ standings, teams }: Props) {
   const filtered = div === "All" ? standings : standings.filter(s => s.teams?.divisions?.name === div);
   const sorted = [...filtered].sort((a, b) => b.wins - a.wins || a.losses - b.losses);
 
-  // Only show scenarios when viewing a single group/division (not "All")
-  const showScenarios = div !== "All" || divs.length <= 1;
+  // Compute per-group positions for scenario mapping
+  const groupPositions: Record<string, number> = {};
+  const byGroup: Record<string, typeof standings> = {};
+  standings.forEach(s => {
+    const g = s.teams?.divisions?.name || "_none";
+    if (!byGroup[g]) byGroup[g] = [];
+    byGroup[g].push(s);
+  });
+  Object.values(byGroup).forEach(group => {
+    [...group].sort((a, b) => b.wins - a.wins || a.losses - b.losses)
+      .forEach((s, i) => { groupPositions[s.id] = i + 1; });
+  });
 
   if (!standings.length && teams.length) {
     return (
@@ -65,7 +75,8 @@ export function StandingsWidget({ standings, teams }: Props) {
           {sorted.map((s, i) => {
             const t = s.teams || {} as Team;
             const pos = i + 1;
-            const scenario = showScenarios ? getPlayoffScenario(pos) : null;
+            const groupPos = groupPositions[s.id] || pos;
+            const scenario = getPlayoffScenario(groupPos);
             return (
               <tr
                 key={s.id}
@@ -99,7 +110,7 @@ export function StandingsWidget({ standings, teams }: Props) {
         </tbody>
       </table>
       {/* Legend */}
-      {showScenarios && sorted.length > 0 && (
+      {true && sorted.length > 0 && (
         <div className="px-3 py-2 border-t border-border flex flex-wrap gap-x-3 gap-y-1">
           {[
             { label: "UB Bye", color: "var(--gold)" },

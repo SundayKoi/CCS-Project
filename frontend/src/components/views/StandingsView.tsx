@@ -15,7 +15,18 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
   const filtered = div === "All" ? standings : standings.filter(s => s.teams?.divisions?.name === div);
   const sorted = [...filtered].sort((a, b) => b.wins - a.wins || a.losses - b.losses);
 
-  const showScenarios = div !== "All" || divs.length <= 1;
+  // Compute each team's position within their own group for scenario mapping
+  const groupPositions: Record<string, number> = {};
+  const byGroup: Record<string, Standing[]> = {};
+  standings.forEach(s => {
+    const groupName = s.teams?.divisions?.name || "_none";
+    if (!byGroup[groupName]) byGroup[groupName] = [];
+    byGroup[groupName].push(s);
+  });
+  Object.values(byGroup).forEach(group => {
+    const groupSorted = [...group].sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    groupSorted.forEach((s, i) => { groupPositions[s.id] = i + 1; });
+  });
 
   if (!standings.length) return <div className="py-10 text-center text-text-dim text-[13px]">No standings data yet. Ingest some matches first.</div>;
 
@@ -52,7 +63,7 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
                 </th>
               ))}
               {!isMobile && <th className="px-3.5 py-3 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border">DIVISION</th>}
-              {showScenarios && <th className="px-3.5 py-3 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border">SCENARIO</th>}
+              {true && <th className="px-3.5 py-3 text-left text-[10px] text-text-muted font-heading font-normal tracking-wider border-b border-border">SCENARIO</th>}
             </tr>
           </thead>
           <tbody>
@@ -61,7 +72,8 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
               const total = s.wins + s.losses;
               const pct = total > 0 ? Math.round((s.wins / total) * 100) : 0;
               const pos = i + 1;
-              const scenario = showScenarios ? getPlayoffScenario(pos) : null;
+              const groupPos = groupPositions[s.id] || pos;
+              const scenario = getPlayoffScenario(groupPos);
               return (
                 <tr
                   key={s.id}
@@ -85,7 +97,7 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
                     {s.streak || "—"}
                   </td>
                   {!isMobile && <td className="px-3.5 py-3 text-xs text-text-muted">{t.divisions?.name || "—"}</td>}
-                  {showScenarios && (
+                  {true && (
                     <td className="px-3.5 py-3">
                       {scenario && (
                         <span
@@ -105,7 +117,7 @@ export function StandingsView({ standings, teams, isMobile }: Props) {
       </div>
 
       {/* Legend */}
-      {showScenarios && (
+      {true && (
         <div className="mt-4 bg-bg2 border border-border rounded-md p-4">
           <div className="font-display text-[13px] text-text-bright tracking-widest mb-3">PLAYOFF SCENARIOS</div>
           <div className="grid grid-cols-2 gap-2" style={{ maxWidth: 500 }}>
