@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TeamBadge } from "../TeamBadge";
+import { getPlayoffScenario } from "../../lib/playoffScenarios";
 import type { Standing, Team } from "../../hooks/useLeagueData";
 
 interface Props {
@@ -12,6 +13,9 @@ export function StandingsWidget({ standings, teams }: Props) {
   const [div, setDiv] = useState(divs[0] || "All");
   const filtered = div === "All" ? standings : standings.filter(s => s.teams?.divisions?.name === div);
   const sorted = [...filtered].sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+
+  // Only show scenarios when viewing a single group/division (not "All")
+  const showScenarios = div !== "All" || divs.length <= 1;
 
   if (!standings.length && teams.length) {
     return (
@@ -60,13 +64,29 @@ export function StandingsWidget({ standings, teams }: Props) {
         <tbody>
           {sorted.map((s, i) => {
             const t = s.teams || {} as Team;
+            const pos = i + 1;
+            const scenario = showScenarios ? getPlayoffScenario(pos) : null;
             return (
-              <tr key={s.id} className="cursor-pointer">
+              <tr
+                key={s.id}
+                className="cursor-pointer"
+                style={scenario ? { borderLeft: `3px solid ${scenario.borderColor}` } : undefined}
+              >
                 <td className="px-3.5 py-3">
                   <div className="flex items-center gap-2.5">
-                    <span className="text-[9px] text-text-dim font-mono min-w-[14px] text-right">{i + 1}</span>
+                    <span className="text-[9px] text-text-dim font-mono min-w-[14px] text-right">{pos}</span>
                     <TeamBadge team={t} />
-                    <span className="font-heading text-[13px] text-text font-medium">{t.name}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-heading text-[13px] text-text font-medium">{t.name}</span>
+                      {scenario && (
+                        <span
+                          className="text-[8px] font-heading tracking-wider uppercase font-bold"
+                          style={{ color: scenario.color }}
+                        >
+                          {scenario.shortLabel}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="text-center font-mono text-[13px] text-text-secondary">{s.wins}-{s.losses}</td>
@@ -78,6 +98,23 @@ export function StandingsWidget({ standings, teams }: Props) {
           })}
         </tbody>
       </table>
+      {/* Legend */}
+      {showScenarios && sorted.length > 0 && (
+        <div className="px-3 py-2 border-t border-border flex flex-wrap gap-x-3 gap-y-1">
+          {[
+            { label: "UB Bye", color: "var(--gold)" },
+            { label: "Upper", color: "var(--green)" },
+            { label: "LB", color: "var(--blue)" },
+            { label: "Gauntlet", color: "var(--orange)" },
+            { label: "Prelim", color: "var(--red)" },
+          ].map(l => (
+            <div key={l.label} className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-sm" style={{ background: l.color }} />
+              <span className="text-[8px] text-text-muted font-heading tracking-wider">{l.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
