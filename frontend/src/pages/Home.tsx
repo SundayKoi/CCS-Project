@@ -93,12 +93,12 @@ export default function Home() {
               {/* MIDDLE COLUMN — Welcome banner + Streams/VODs */}
               <div className="flex flex-col gap-5">
                 {!hero && (
-                  <div className="rounded-lg relative overflow-hidden" style={{ background: "var(--bg2)", border: "1px solid var(--border)", padding: isMobile ? "14px 12px" : "16px 20px" }}>
+                  <div className="rounded-lg relative overflow-hidden" style={{ background: "linear-gradient(135deg, var(--accent), #8b1a3a)", padding: isMobile ? "14px 12px" : "16px 20px" }}>
                     <div className="relative flex items-center gap-3">
                       <span className="text-lg">⚔️</span>
                       <div>
                         <h2 className="font-display text-white tracking-wider" style={{ fontSize: isMobile ? 16 : 18 }}>WELCOME TO CCS</h2>
-                        <p className="text-text-secondary text-xs">{teams.length} teams · {split?.name || "Season starting soon"}</p>
+                        <p className="text-white/70 text-xs">{teams.length} teams · {split?.name || "Season starting soon"}</p>
                       </div>
                     </div>
                   </div>
