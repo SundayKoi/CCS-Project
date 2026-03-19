@@ -12,13 +12,8 @@ interface Props {
   feeds: TwitterFeedItem[];
 }
 
-function extractTweetId(url: string): string | null {
-  const match = url.match(/status\/(\d+)/);
-  return match ? match[1] : null;
-}
-
 function extractHandle(url: string): string | null {
-  const match = url.match(/(?:twitter\.com|x\.com)\/(\w+)\/status/);
+  const match = url.match(/(?:twitter\.com|x\.com)\/(\w+)/);
   return match ? match[1] : null;
 }
 
@@ -39,64 +34,65 @@ export function TwitterFeedSection({ feeds }: Props) {
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </svg>
         <span className="font-display text-[15px] text-text-bright tracking-widest">
-          LATEST FROM X
+          FOLLOW US ON X
         </span>
       </div>
-      <div className="flex flex-col gap-4 p-4">
-        {/* Timeline embeds */}
+      <div className="flex flex-col gap-3 p-4">
+        {/* Profile cards */}
         {timelines.map(feed => (
-          <div key={feed.id}>
-            <a
-              href={`https://x.com/${feed.handle}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 mb-3 no-underline group"
-            >
-              <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-xs font-heading">
-                {(feed.handle || "?").charAt(0).toUpperCase()}
-              </div>
-              <span className="font-heading text-[13px] text-text-bright font-medium group-hover:text-accent transition-colors">
+          <a
+            key={feed.id}
+            href={`https://x.com/${feed.handle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 bg-bg3 rounded-lg p-4 border border-border hover:border-accent/40 transition-colors no-underline group"
+          >
+            <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-lg font-heading shrink-0">
+              {(feed.handle || "?").charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-heading text-sm text-text-bright font-medium group-hover:text-accent transition-colors">
                 @{feed.handle}
-              </span>
-              <span className="text-text-dim text-[10px] ml-auto">View on X →</span>
-            </a>
-            <iframe
-              src={`https://syndication.twitter.com/srv/timeline-profile/screen-name/${feed.handle}?dnt=true&embedId=tw-${feed.id}&hideBorder=true&hideFooter=true&hideHeader=true&hideScrollBar=false&lang=en&theme=dark&transparent=true&showReplies=false`}
-              className="w-full border-0 rounded-md"
-              style={{ minHeight: 400, colorScheme: "dark" }}
-              title={`@${feed.handle} timeline`}
-              sandbox="allow-scripts allow-same-origin allow-popups"
-            />
-          </div>
+              </div>
+              {feed.title && (
+                <div className="text-text-secondary text-xs mt-0.5">{feed.title}</div>
+              )}
+            </div>
+            <div className="bg-accent text-white text-xs font-heading font-medium px-4 py-2 rounded-full tracking-wider uppercase shrink-0 group-hover:opacity-90 transition-opacity">
+              Follow
+            </div>
+          </a>
         ))}
 
-        {/* Individual tweet embeds */}
+        {/* Pinned tweet link cards */}
         {tweets.map(feed => {
-          const tweetId = extractTweetId(feed.tweet_url!);
-          const handle = extractHandle(feed.tweet_url!) || "unknown";
-          if (!tweetId) return null;
+          const handle = extractHandle(feed.tweet_url!) || "X";
           return (
-            <div key={feed.id}>
-              {feed.title && (
-                <p className="text-xs text-text-muted font-heading tracking-wider mb-2 uppercase">
-                  {feed.title}
-                </p>
-              )}
-              <a
-                href={feed.tweet_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block no-underline"
-              >
-                <iframe
-                  src={`https://platform.twitter.com/embed/Tweet.html?id=${tweetId}&theme=dark&dnt=true`}
-                  className="w-full border-0 rounded-md pointer-events-none"
-                  height="280"
-                  title={feed.title || `Tweet by @${handle}`}
-                  sandbox="allow-scripts allow-same-origin"
-                />
-              </a>
-            </div>
+            <a
+              key={feed.id}
+              href={feed.tweet_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 bg-bg3 rounded-lg p-4 border border-border hover:border-accent/40 transition-colors no-underline group"
+            >
+              <div className="w-8 h-8 rounded-full bg-bg-input flex items-center justify-center text-text-muted font-bold text-xs font-heading shrink-0 mt-0.5">
+                {handle.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-heading text-[13px] text-text-bright font-medium">@{handle}</span>
+                  {feed.title && (
+                    <span className="text-text-dim text-[11px]">· {feed.title}</span>
+                  )}
+                </div>
+                <div className="text-text-secondary text-xs group-hover:text-accent transition-colors">
+                  View post on X →
+                </div>
+              </div>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 text-text-dim shrink-0 mt-1" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
           );
         })}
       </div>
