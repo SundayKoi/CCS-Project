@@ -37,11 +37,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client, Client
 
+import tweepy
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from riot_ingest import ingest_match
 
 # ── Config ────────────────────────────────────────────────
 
 RIOT_API_KEY = os.environ.get("RIOT_API_KEY", "")
+TWITTER_BEARER_TOKEN = os.environ.get("TWITTER_BEARER_TOKEN", "")
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
 RIOT_REGION = os.environ.get("RIOT_REGION", "NA")           # For tournament API: "NA", "EUW", etc.
@@ -479,6 +485,91 @@ Example workflow:
   5. Game ends → Riot POSTs to your webhook → auto-ingested
   6. Website updates automatically
 """
+
+
+# ══════════════════════════════════════════════════════════
+# TWITTER/X — Fetch recent tweets and cache in Supabase
+# ══════════════════════════════════════════════════════════
+
+@app.get("/api/tweets/{handle}")
+async def get_tweets(handle: str, count: int = 5):
+    """
+    Fetch recent tweets for a handle. Serves from cache if fresh (<15min),
+    otherwise fetches from X API and updates cache.
+    """
+    db = get_db()
+    handle = handle.lstrip("@").strip()
+
+    # Check cache
+    cached = (
+        db.table("cached_tweets")
+        .select("*")
+        .eq("handle", handle.lower())
+        .order("fetched_at", desc=True)
+        .limit(1)
+        .execute()
+    )
+
+    if cached.data:
+        fetched_at = datetime.fromisoformat(cached.data[0]["fetched_at"].replace("Z", "+00:00"))
+        age_minutes = (datetime.now(timezone.utc) - fetched_at).total_seconds() / 60
+        if age_minutes < 15:
+            return {"handle": handle, "tweets": json.loads(cached.data[0]["tweets_json"]), "cached": True}
+
+    # Fetch from X API
+    if not TWITTER_BEARER_TOKEN:
+        raise HTTPException(500, "TWITTER_BEARER_TOKEN not configured")
+
+    try:
+        client = tweepy.Client(bearer_token=TWITTER_BEARER_TOKEN)
+        user = client.get_user(username=handle)
+        if not user.data:
+            raise HTTPException(404, f"X user @{handle} not found")
+
+        response = client.get_users_tweets(
+            user.data.id,
+            max_results=min(count, 10),
+            tweet_fields=["created_at", "public_metrics", "text", "author_id"],
+            exclude=["retweets", "replies"],
+        )
+
+        tweets = []
+        if response.data:
+            for tweet in response.data:
+                tweets.append({
+                    "id": str(tweet.id),
+                    "text": tweet.text,
+                    "created_at": tweet.created_at.isoformat() if tweet.created_at else None,
+                    "metrics": {
+                        "likes": tweet.public_metrics.get("like_count", 0) if tweet.public_metrics else 0,
+                        "retweets": tweet.public_metrics.get("retweet_count", 0) if tweet.public_metrics else 0,
+                        "replies": tweet.public_metrics.get("reply_count", 0) if tweet.public_metrics else 0,
+                    },
+                    "url": f"https://x.com/{handle}/status/{tweet.id}",
+                })
+
+        # Cache the result
+        db.table("cached_tweets").upsert({
+            "handle": handle.lower(),
+            "tweets_json": json.dumps(tweets),
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }, on_conflict="handle").execute()
+
+        return {"handle": handle, "tweets": tweets, "cached": False}
+
+    except tweepy.TooManyRequests:
+        # If rate-limited, serve stale cache if available
+        if cached.data:
+            return {"handle": handle, "tweets": json.loads(cached.data[0]["tweets_json"]), "cached": True, "stale": True}
+        raise HTTPException(429, "X API rate limit exceeded")
+    except tweepy.TwitterServerError as e:
+        raise HTTPException(502, f"X API error: {str(e)[:200]}")
+    except Exception as e:
+        log.error(f"Twitter fetch error for @{handle}: {e}")
+        # Serve stale cache as fallback
+        if cached.data:
+            return {"handle": handle, "tweets": json.loads(cached.data[0]["tweets_json"]), "cached": True, "stale": True}
+        raise HTTPException(500, f"Failed to fetch tweets: {str(e)[:200]}")
 
 
 # ══════════════════════════════════════════════════════════
