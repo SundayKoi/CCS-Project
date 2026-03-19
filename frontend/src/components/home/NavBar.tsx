@@ -40,23 +40,17 @@ export function NavBar({ active, setActive, isMobile }: Props) {
         </div>
         {open && (
           <div className="absolute top-full left-0 right-0 bg-bg2 border-b-2 border-accent z-[100] shadow-[0_8px_24px_rgba(0,0,0,0.6)]">
-            {TABS.map(t =>
-              t === "Stats" ? (
-                <a key={t} href="/stats.html" className="block w-full text-left bg-transparent border-none cursor-pointer py-3.5 px-5 text-text-secondary font-heading text-sm tracking-wider uppercase no-underline border-l-[3px] border-l-transparent">
-                  Stats
-                </a>
-              ) : (
-                <button
-                  key={t}
-                  onClick={() => { setActive(t); setOpen(false); }}
-                  className={`block w-full text-left bg-transparent border-none cursor-pointer py-3.5 px-5 font-heading text-sm tracking-wider uppercase border-l-[3px] ${
-                    active === t ? "bg-bg-input text-text-bright font-bold border-l-accent" : "text-text-secondary font-normal border-l-transparent"
-                  }`}
-                >
-                  {t}
-                </button>
-              )
-            )}
+            {TABS.map(t => (
+              <button
+                key={t}
+                onClick={() => { setActive(t); setOpen(false); }}
+                className={`block w-full text-left bg-transparent border-none cursor-pointer py-3.5 px-5 font-heading text-sm tracking-wider uppercase border-l-[3px] ${
+                  active === t ? "bg-bg-input text-text-bright font-bold border-l-accent" : "text-text-secondary font-normal border-l-transparent"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
             <div className="px-5 py-2.5 border-t border-border">
               <ThemeToggle />
             </div>
@@ -74,23 +68,17 @@ export function NavBar({ active, setActive, isMobile }: Props) {
           CCS<span className="text-accent">LEAGUE</span>
         </span>
       </div>
-      {TABS.map(t =>
-        t === "Stats" ? (
-          <a key={t} href="/stats.html" className="bg-transparent cursor-pointer py-3.5 px-4 text-text-secondary font-heading text-sm tracking-wider border-0 border-b-2 border-b-transparent whitespace-nowrap uppercase no-underline">
-            Stats
-          </a>
-        ) : (
-          <button
-            key={t}
-            onClick={() => setActive(t)}
-            className={`bg-transparent cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase border-0 ${
-              active === t ? "text-text-bright font-bold border-b-2 border-b-accent" : "text-text-secondary font-normal border-b-2 border-b-transparent"
-            }`}
-          >
-            {t}
-          </button>
-        )
-      )}
+      {TABS.map(t => (
+        <button
+          key={t}
+          onClick={() => setActive(t)}
+          className={`bg-transparent cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase border-0 ${
+            active === t ? "text-text-bright font-bold border-b-2 border-b-accent" : "text-text-secondary font-normal border-b-2 border-b-transparent"
+          }`}
+        >
+          {t}
+        </button>
+      ))}
       <div className="ml-auto">
         <ThemeToggle />
       </div>

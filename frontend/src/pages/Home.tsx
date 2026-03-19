@@ -16,7 +16,6 @@ import { TwitchStreams } from "../components/home/TwitchStreams";
 import { ScoresView } from "../components/views/ScoresView";
 import { ScheduleView } from "../components/views/ScheduleView";
 import { StandingsView } from "../components/views/StandingsView";
-import { StatsView } from "../components/views/StatsView";
 import { TeamsView } from "../components/views/TeamsView";
 import { PlayersView } from "../components/views/PlayersView";
 
@@ -57,12 +56,18 @@ export default function Home() {
             Open Admin
           </Link>
         </div>
+      ) : tab === "Stats" ? (
+        <iframe
+          src="/stats.html"
+          className="w-full border-0"
+          style={{ height: "calc(100vh - 100px)", minHeight: 600 }}
+          title="CCS League Stats"
+        />
       ) : (
         <div className="max-w-[1280px] mx-auto" style={{ padding: isMobile ? 12 : "24px 32px" }}>
           {tab === "Scores" ? <ScoresView matches={matches} isMobile={isMobile} />
           : tab === "Schedule" ? <ScheduleView matches={matches} isMobile={isMobile} />
           : tab === "Standings" ? <StandingsView standings={standings} teams={teams} isMobile={isMobile} />
-          : tab === "Stats" ? <StatsView players={players} isMobile={isMobile} />
           : tab === "Teams" ? <TeamsView teams={teams} standings={standings} rosters={rosters} isMobile={isMobile} />
           : tab === "Players" ? <PlayersView players={players} isMobile={isMobile} />
           : (
