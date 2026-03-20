@@ -83,7 +83,7 @@ export function StatsView({ players, isMobile }: Props) {
 
   const tableCols = isMobile
     ? [["gp", "GP"], ["kda", "KDA"], ["kills", "K"], ["deaths", "D"], ["assists", "A"]]
-    : [["gp", "GP"], ["kills", "K"], ["deaths", "D"], ["assists", "A"], ["kda", "KDA"], ["cs", "CS/G"], ["damage", "DMG/G"], ["gold", "GOLD/G"], ["winRate", "WIN%"], ["mvps", "MVP"]];
+    : [["gp", "GP"], ["kills", "K"], ["deaths", "D"], ["assists", "A"], ["kda", "KDA"], ["cs", "CS/G"], ["damage", "DMG/G"], ["gold", "GOLD/G"], ["winRate", "WIN%"]];
 
   return (
     <div className="max-w-[1100px] mx-auto">

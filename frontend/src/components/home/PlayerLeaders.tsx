@@ -7,7 +7,7 @@ interface Props {
   isMobile: boolean;
 }
 
-const LABELS: Record<string, string> = { kda: "KDA", kills: "Kills", assists: "Assists", cs: "CS/Game", mvps: "MVPs" };
+const LABELS: Record<string, string> = { kda: "KDA", kills: "Kills", assists: "Assists", cs: "CS/Game" };
 
 export function PlayerLeaders({ players, isMobile }: Props) {
   const [stat, setStat] = useState("kda");

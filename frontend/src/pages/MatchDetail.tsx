@@ -305,7 +305,6 @@ export default function MatchDetail() {
                   <tbody>
                     {/* Blue team */}
                     {blueStats.map(s => {
-                      const isMvp = s.is_mvp;
                       const playerName = s.players?.display_name || s.players?.riot_game_name || "Unknown";
                       return (
                         <tr
@@ -314,8 +313,7 @@ export default function MatchDetail() {
                         >
                           <td className="px-4 py-2 font-heading text-xs">
                             <div className="flex items-center gap-1.5">
-                              {isMvp && <span className="text-yellow-400 text-xs" title="MVP">&#9733;</span>}
-                              <span className={isMvp ? "text-yellow-300 font-semibold" : ""}>{playerName}</span>
+                              <span>{playerName}</span>
                             </div>
                           </td>
                           <td className="px-2 py-2 font-mono text-xs text-text-secondary">{s.champion_name}</td>
@@ -337,7 +335,6 @@ export default function MatchDetail() {
 
                     {/* Red team */}
                     {redStats.map(s => {
-                      const isMvp = s.is_mvp;
                       const playerName = s.players?.display_name || s.players?.riot_game_name || "Unknown";
                       return (
                         <tr
@@ -346,8 +343,7 @@ export default function MatchDetail() {
                         >
                           <td className="px-4 py-2 font-heading text-xs">
                             <div className="flex items-center gap-1.5">
-                              {isMvp && <span className="text-yellow-400 text-xs" title="MVP">&#9733;</span>}
-                              <span className={isMvp ? "text-yellow-300 font-semibold" : ""}>{playerName}</span>
+                              <span>{playerName}</span>
                             </div>
                           </td>
                           <td className="px-2 py-2 font-mono text-xs text-text-secondary">{s.champion_name}</td>
