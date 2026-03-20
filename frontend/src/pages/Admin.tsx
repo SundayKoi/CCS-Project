@@ -72,7 +72,7 @@ export default function Admin() {
               <span className="font-display text-xl text-text-bright tracking-widest">
                 CCS
               </span>
-              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-heading tracking-wide font-medium uppercase ml-2" style={{ background: "rgba(194,24,91,0.2)", color: "#c2185b" }}>
+              <span className="inline-block px-2 py-0.5 rounded text-[10px] font-heading tracking-wide font-medium uppercase ml-2" style={{ background: "rgba(210,7,8,0.2)", color: "var(--accent)" }}>
                 ADMIN
               </span>
             </div>

@@ -8,8 +8,8 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ─── THEME VARIABLES ─── */
-[data-theme="dark"]{--bg:#111;--bg2:#1a1a1a;--bg3:#222;--border:#2a2a2a;--text:#e5e5e5;--text-secondary:#999;--accent:#c2185b;--accent-light:#c2185b20;--green:#10b981;--red:#ef4444;--gold:#d4a017;--silver:#a0a0a0;--bronze:#b87333}
-[data-theme="light"]{--bg:#f5f5f5;--bg2:#fff;--bg3:#fafafa;--border:#e0e0e0;--text:#1a1a1a;--text-secondary:#666;--accent:#c2185b;--accent-light:#c2185b15;--green:#059669;--red:#dc2626;--gold:#b8860b;--silver:#808080;--bronze:#a0522d}
+[data-theme="dark"]{--bg:#010101;--bg2:#0d0d0d;--bg3:#141414;--border:#1e1e1e;--text:#d1d2d4;--text-secondary:#999;--accent:#d20708;--accent-light:#d2070820;--green:#10b981;--red:#d20708;--gold:#d7a52a;--silver:#a0a0a0;--bronze:#b87333}
+[data-theme="light"]{--bg:#f5f5f5;--bg2:#fff;--bg3:#fafafa;--border:#e0e0e0;--text:#1a1a1a;--text-secondary:#666;--accent:#d20708;--accent-light:#d2070815;--green:#059669;--red:#d20708;--gold:#d7a52a;--silver:#808080;--bronze:#a0522d}
 
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'Source Sans 3',sans-serif;min-height:100vh;overflow-x:hidden}
@@ -847,7 +847,7 @@ function renderLookup(){const input=document.getElementById('lookupInput');if(in
 // ═══ CONFIG ═══
 const DEFAULT_CONFIG={
   leagueName:'CCS',subtitle:'PLAYER PERFORMANCE DASHBOARD',seasonLabel:'Season 1 // Official Stats',creditLine:'Powered by CCS',footerText:'CCS — POWERED BY RIOT API — LIVE FROM SUPABASE',
-  colorPrimary:'#c2185b',colorSecondary:'#ef4444',colorAccent:'#8b5cf6',colorBg:'#111',logoUrl:'',
+  colorPrimary:'#d20708',colorSecondary:'#d7a52a',colorAccent:'#d20708',colorBg:'#010101',logoUrl:'',
   tabs:[{id:'leaderboard',name:'Leaderboard',enabled:true},{id:'teams',name:'Teams',enabled:true},{id:'champions',name:'Champions',enabled:true},{id:'records',name:'Records',enabled:true},{id:'scouting',name:'Scouting',enabled:true},{id:'lookup',name:'Player Lookup',enabled:true}],
   teamColors:{},minGamesDefault:5
 };

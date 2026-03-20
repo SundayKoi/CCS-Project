@@ -27,7 +27,7 @@ export function LoginScreen({ onLogin, toast }: Props) {
   return (
     <div className="bg-bg min-h-screen text-text font-body flex items-center justify-center">
       <div className="w-[380px]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] w-[200px] h-[200px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(194,24,91,0.12)_0%,transparent_70%)]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] w-[200px] h-[200px] rounded-full pointer-events-none bg-[radial-gradient(circle,rgba(210,7,8,0.15)_0%,transparent_70%)]" />
         <div className="text-center mb-8 relative">
           <span className="text-4xl">⚔️</span>
           <div className="font-display text-[32px] text-white tracking-widest mt-2">
