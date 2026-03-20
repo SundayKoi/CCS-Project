@@ -95,7 +95,7 @@ export function StandingsWidget({ standings, teams, matches, games }: Props) {
               >
                 <td className="px-3.5 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono min-w-[14px] text-right font-bold" style={{ color: scenario?.color || "var(--text-dim)" }}>{pos}</span>
+                    <span className="text-[10px] font-mono min-w-[14px] text-right font-bold" style={{ color: groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#3f0008" : "#010101" }}>{pos}</span>
                     <TeamBadge team={t} />
                     <div className="flex flex-col min-w-0">
                       <span className="font-heading text-[13px] text-text font-medium">{t.name}</span>

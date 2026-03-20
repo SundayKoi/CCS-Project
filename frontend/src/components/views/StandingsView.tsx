@@ -90,7 +90,7 @@ export function StandingsView({ standings, teams, matches, games, isMobile }: Pr
                     borderBottom: showTierBreak ? `2px solid ${scenario?.borderColor || "var(--border)"}` : undefined,
                   }}
                 >
-                  <td className="px-3.5 py-3.5 font-display text-lg" style={{ color: scenario?.color || "var(--text-dim)" }}>{pos}</td>
+                  <td className="px-3.5 py-3.5 font-display text-lg" style={{ color: groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#3f0008" : "#010101" }}>{pos}</td>
                   <td className="px-3.5 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <TeamBadge team={t} size={28} />
