@@ -10,7 +10,7 @@ import { StandingsWidget } from "../components/home/StandingsWidget";
 import { PlayerLeaders } from "../components/home/PlayerLeaders";
 import { UpcomingSchedule } from "../components/home/UpcomingSchedule";
 import { MobileBottomBar } from "../components/home/MobileBottomBar";
-import { TwitterFeedSection } from "../components/home/TwitterFeed";
+import { SocialLinks } from "../components/home/SocialLinks";
 import { TwitchStreams } from "../components/home/TwitchStreams";
 import { ScoresView } from "../components/views/ScoresView";
 import { ScheduleView } from "../components/views/ScheduleView";
@@ -99,7 +99,7 @@ export default function Home() {
                     <span className="text-text-dim text-[13px]">No news yet. Publish articles from the admin dashboard.</span>
                   </div>
                 )}
-                <TwitterFeedSection feeds={twitterFeeds} />
+                <SocialLinks feeds={twitterFeeds} />
               </div>
 
               {/* MIDDLE COLUMN — Welcome banner + Streams/VODs */}

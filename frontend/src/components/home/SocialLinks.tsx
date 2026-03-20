@@ -17,7 +17,7 @@ function extractHandle(url: string): string | null {
   return match ? match[1] : null;
 }
 
-export function TwitterFeedSection({ feeds }: Props) {
+export function SocialLinks({ feeds }: Props) {
   const activeFeeds = feeds
     .filter((f) => f.is_active)
     .sort((a, b) => a.sort_order - b.sort_order);
