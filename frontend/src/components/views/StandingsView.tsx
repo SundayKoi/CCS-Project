@@ -133,12 +133,12 @@ export function StandingsView({ standings, teams, matches, games, isMobile }: Pr
         <div className="p-4">
           <div className="flex flex-col gap-1.5">
             {[
-              { pos: "1st", label: "Upper Bracket Bye", desc: "Advances directly to UB Round 2", color: "var(--gold)", bg: "rgba(212,160,23,0.15)", border: "rgba(212,160,23,0.3)" },
-              { pos: "2nd-3rd", label: "Upper Bracket", desc: "Starts in Upper Bracket Round 1", color: "var(--green)", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)" },
-              { pos: "4th", label: "Lower Bracket Bye", desc: "Advances directly to LB Round 2", color: "var(--blue)", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)" },
-              { pos: "5th", label: "Lower Bracket", desc: "Starts in Lower Bracket Round 1", color: "var(--blue)", bg: "rgba(59,130,246,0.10)", border: "rgba(59,130,246,0.2)" },
-              { pos: "6th", label: "Gauntlet Qualifier", desc: "Bo3 vs Gauntlet Prelim winner", color: "var(--orange)", bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.25)" },
-              { pos: "7th-8th", label: "Gauntlet Prelim", desc: "Bo1 cross-group elimination", color: "var(--red)", bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.25)" },
+              { pos: "1st", label: "Upper Bracket Bye", desc: "Advances directly to UB Round 2", color: "#d7a52a", bg: "rgba(215,165,42,0.12)" },
+              { pos: "2nd-3rd", label: "Upper Bracket", desc: "Starts in Upper Bracket Round 1", color: "#d7a52a", bg: "rgba(215,165,42,0.08)" },
+              { pos: "4th", label: "Lower Bracket Bye", desc: "Advances directly to LB Round 2", color: "#d20708", bg: "rgba(210,7,8,0.12)" },
+              { pos: "5th", label: "Lower Bracket", desc: "Starts in Lower Bracket Round 1", color: "#d20708", bg: "rgba(210,7,8,0.08)" },
+              { pos: "6th", label: "Gauntlet Qualifier", desc: "Bo3 vs Gauntlet Prelim winner", color: "#d1d2d4", bg: "rgba(209,210,212,0.08)" },
+              { pos: "7th-8th", label: "Gauntlet Prelim", desc: "Bo1 cross-group elimination", color: "#999", bg: "rgba(209,210,212,0.05)" },
             ].map(s => (
               <div
                 key={s.pos}

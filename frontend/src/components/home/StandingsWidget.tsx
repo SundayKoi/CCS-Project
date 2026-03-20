@@ -123,11 +123,9 @@ export function StandingsWidget({ standings, teams, matches, games }: Props) {
       {true && sorted.length > 0 && (
         <div className="px-3 py-2 border-t border-border flex flex-wrap gap-x-3 gap-y-1">
           {[
-            { label: "UB Bye", color: "var(--gold)" },
-            { label: "Upper", color: "var(--green)" },
-            { label: "LB", color: "var(--blue)" },
-            { label: "Gauntlet", color: "var(--orange)" },
-            { label: "Prelim", color: "var(--red)" },
+            { label: "Upper", color: "#d7a52a" },
+            { label: "Lower", color: "#d20708" },
+            { label: "Gauntlet", color: "#d1d2d4" },
           ].map(l => (
             <div key={l.label} className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-sm" style={{ background: l.color }} />
