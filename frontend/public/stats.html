@@ -68,9 +68,9 @@ body.embedded .hdr{padding-top:16px}
 .tog{display:flex;gap:3px}
 .tbtn{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.5px;padding:8px 4px;cursor:pointer;transition:all .2s;white-space:nowrap}
 .tbtn:hover{border-color:var(--text-secondary)}
-.tbtn.ah{background:var(--accent-light);border-color:var(--green);color:var(--green)}
-.tbtn.al{background:var(--accent-light);border-color:var(--red);color:var(--red)}
-.tbtn.aa{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+.tbtn.ah{background:rgba(215,165,42,0.1);border-color:#d7a52a;color:#d7a52a}
+.tbtn.al{background:rgba(210,7,8,0.1);border-color:#d20708;color:#d20708}
+.tbtn.aa{background:rgba(209,210,212,0.1);border-color:#d1d2d4;color:#d1d2d4}
 .role-checks{display:flex;gap:4px;flex-wrap:wrap}
 .rc{cursor:pointer}
 .rc input{display:none}
@@ -462,7 +462,7 @@ body.embedded .hdr{padding-top:16px}
       <div class="ctrl"><label>Min Games</label><select id="minGSel" onchange="renderLeaderboard()"><option value="1">1+</option><option value="3">3+</option><option value="5" selected>5+</option><option value="8">8+</option><option value="10">10+</option></select></div>
     </div>
     <div class="ctrls2">
-      <div class="ctrl"><label>Role</label><div class="role-checks" id="roleChecks"><label class="rc"><input type="checkbox" value="TOP" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#ef4444">Top</span></label><label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#22c55e">Jng</span></label><label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#3b82f6">Mid</span></label><label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#f59e0b">Adc</span></label><label class="rc"><input type="checkbox" value="UTILITY" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#a855f7">Sup</span></label></div></div>
+      <div class="ctrl"><label>Role</label><div class="role-checks" id="roleChecks"><label class="rc"><input type="checkbox" value="TOP" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#d20708">Top</span></label><label class="rc"><input type="checkbox" value="JUNGLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#d7a52a">Jng</span></label><label class="rc"><input type="checkbox" value="MIDDLE" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#d1d2d4">Mid</span></label><label class="rc"><input type="checkbox" value="BOTTOM" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#d20708">Adc</span></label><label class="rc"><input type="checkbox" value="UTILITY" checked onchange="renderLeaderboard()"><span class="rb" style="--rc:#d7a52a">Sup</span></label></div></div>
       <div class="ctrl"><label>Team</label><select id="teamSel" onchange="renderLeaderboard()"></select></div>
       <div class="ctrl"><label>Search Player</label><input type="text" id="searchBar" placeholder="Type a name..." oninput="renderLeaderboard()" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Source Sans 3',sans-serif;font-size:14px;padding:8px 12px;transition:all .2s;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></div>
     </div>
