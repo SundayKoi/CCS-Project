@@ -31,6 +31,7 @@ interface DraftListing {
   description?: string;
   discord_contact?: string;
   opgg_url?: string;
+  team_name?: string;
 }
 
 const ROLE_COLORS: Record<string, string> = {
@@ -55,7 +56,6 @@ function RoleBadge({ role }: { role: string }) {
 export function DraftBoard({ isMobile }: Props) {
   const [listings, setListings] = useState<DraftListing[]>([]);
   const [rosterCounts, setRosterCounts] = useState<Record<string, number>>({});
-  const [teams, setTeams] = useState<TeamData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<ListingFilter>("all");
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -65,7 +65,7 @@ export function DraftBoard({ isMobile }: Props) {
   // Create form state
   const [showForm, setShowForm] = useState(false);
   const [formType, setFormType] = useState<"team_lft" | "player_lft">("player_lft");
-  const [formTeamId, setFormTeamId] = useState("");
+  const [formTeamName, setFormTeamName] = useState("");
   const [formRoles, setFormRoles] = useState<string[]>([]);
   const [formPlayerName, setFormPlayerName] = useState("");
   const [formRiotId, setFormRiotId] = useState("");
@@ -79,13 +79,11 @@ export function DraftBoard({ isMobile }: Props) {
 
   const fetchData = useCallback(async () => {
     try {
-      const [listingsData, rostersData, teamsData] = await Promise.all([
+      const [listingsData, rostersData] = await Promise.all([
         db("draft_listings", { query: "?select=*,teams(id,name,abbreviation,logo_url,color_primary)&is_active=eq.true&order=created_at.desc" }),
         db("rosters", { query: "?select=team_id&left_at=is.null&is_starter=eq.true" }),
-        db("teams", { query: "?select=id,name,abbreviation,logo_url,color_primary&is_active=eq.true&order=name" }),
       ]);
       setListings(listingsData || []);
-      setTeams(teamsData || []);
       const counts: Record<string, number> = {};
       if (rostersData) {
         for (const r of rostersData as { team_id: string }[]) {
@@ -99,11 +97,6 @@ export function DraftBoard({ isMobile }: Props) {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Teams eligible to post (< 5 starters and no active listing)
-  const eligibleTeams = useMemo(() => {
-    const activeTeamIds = new Set(listings.filter(l => l.listing_type === "team_lft" && l.is_active).map(l => l.team_id));
-    return teams.filter(t => (rosterCounts[t.id] || 0) < 5 && !activeTeamIds.has(t.id));
-  }, [teams, rosterCounts, listings]);
 
   // Check if a player name already has an active listing
   const hasActivePlayerListing = useCallback((name: string) => {
@@ -115,7 +108,7 @@ export function DraftBoard({ isMobile }: Props) {
     setFormSuccess("");
 
     if (formType === "team_lft") {
-      if (!formTeamId) { setFormError("Select a team"); return; }
+      if (!formTeamName.trim()) { setFormError("Team name required"); return; }
       if (formRoles.length === 0) { setFormError("Select at least one role needed"); return; }
       if (!formDiscord.trim()) { setFormError("Discord contact required"); return; }
     } else {
@@ -139,7 +132,7 @@ export function DraftBoard({ isMobile }: Props) {
       };
 
       if (formType === "team_lft") {
-        body.team_id = formTeamId;
+        body.team_name = formTeamName.trim();
         body.roles_needed = formRoles;
       } else {
         body.player_name = formPlayerName.trim();
@@ -151,7 +144,7 @@ export function DraftBoard({ isMobile }: Props) {
 
       await db("draft_listings", { method: "POST", body });
       setFormSuccess("Listing posted!");
-      setFormTeamId(""); setFormRoles([]); setFormPlayerName(""); setFormRiotId("");
+      setFormTeamName(""); setFormRoles([]); setFormPlayerName(""); setFormRiotId("");
       setFormOpgg(""); setFormRank(""); setFormDescription(""); setFormDiscord("");
       setTimeout(() => { setShowForm(false); setFormSuccess(""); }, 1500);
       fetchData();
@@ -175,7 +168,7 @@ export function DraftBoard({ isMobile }: Props) {
       }
       if (search) {
         const q = search.toLowerCase();
-        const hay = [l.teams?.name, l.player_name, l.riot_id, l.description].filter(Boolean).join(" ").toLowerCase();
+        const hay = [l.teams?.name, l.team_name, l.player_name, l.riot_id, l.description].filter(Boolean).join(" ").toLowerCase();
         if (!hay.includes(q)) return false;
       }
       if (rankFilter && l.listing_type === "player_lft") {
@@ -223,13 +216,9 @@ export function DraftBoard({ isMobile }: Props) {
             {formType === "team_lft" ? (
               <>
                 <div className="mb-3">
-                  <label className="text-[11px] text-text-secondary font-heading tracking-wider uppercase mb-1 block">Team</label>
-                  <select className="w-full bg-bg-input border border-border2 rounded-md text-text py-2.5 px-3.5 text-[13px] font-body outline-none cursor-pointer"
-                    value={formTeamId} onChange={e => setFormTeamId(e.target.value)}>
-                    <option value="">Select team...</option>
-                    {eligibleTeams.map(t => <option key={t.id} value={t.id}>{t.name} ({t.abbreviation})</option>)}
-                  </select>
-                  {eligibleTeams.length === 0 && <p className="text-[11px] text-text-muted mt-1">No eligible teams (all have 5+ starters or already have a listing)</p>}
+                  <label className="text-[11px] text-text-secondary font-heading tracking-wider uppercase mb-1 block">Team Name</label>
+                  <input className="w-full bg-bg-input border border-border2 rounded-md text-text py-2.5 px-3.5 text-[13px] font-body outline-none"
+                    placeholder="Your team name" value={formTeamName} onChange={e => setFormTeamName(e.target.value)} />
                 </div>
                 <div className="mb-3">
                   <label className="text-[11px] text-text-secondary font-heading tracking-wider uppercase mb-1 block">Roles Needed</label>
@@ -371,7 +360,7 @@ export function DraftBoard({ isMobile }: Props) {
                 <TeamBadge team={listing.teams} size={36} />
                 <div className="flex-1 min-w-0">
                   <div className="font-heading text-sm text-text-bright font-semibold truncate">
-                    {listing.teams?.name || "Unknown"} {listing.teams?.abbreviation && <span className="text-text-muted font-normal">({listing.teams.abbreviation})</span>}
+                    {listing.teams?.name || listing.team_name || "Unknown"} {listing.teams?.abbreviation && <span className="text-text-muted font-normal">({listing.teams.abbreviation})</span>}
                   </div>
                 </div>
                 <div className="shrink-0 text-[12px] font-mono text-text-secondary bg-bg3 rounded px-2 py-0.5">
