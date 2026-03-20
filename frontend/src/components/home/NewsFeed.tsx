@@ -93,7 +93,7 @@ function FeatureCard({ article, isMobile, onClick }: { article: Article; isMobil
       ) : (
         <div
           className="w-full flex items-center justify-center"
-          style={{ height: isMobile ? 100 : 120, background: "linear-gradient(135deg, var(--accent) 0%, #6B21A8 100%)" }}
+          style={{ height: isMobile ? 100 : 120, background: "linear-gradient(135deg, var(--accent) 0%, #3f0008 100%)" }}
         >
           <span className="font-display text-white/30 text-4xl tracking-widest">CCS</span>
         </div>

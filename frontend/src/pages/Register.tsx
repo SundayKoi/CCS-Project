@@ -20,8 +20,8 @@ function emptyPlayer(): Player {
 export default function Register() {
   const [teamName, setTeamName] = useState("");
   const [abbreviation, setAbbreviation] = useState("");
-  const [colorPrimary, setColorPrimary] = useState("#6B21A8");
-  const [colorAccent, setColorAccent] = useState("#A855F7");
+  const [colorPrimary, setColorPrimary] = useState("#d7a52a");
+  const [colorAccent, setColorAccent] = useState("#d20708");
   const [logoUrl, setLogoUrl] = useState("");
   const [discordTag, setDiscordTag] = useState("");
   const [players, setPlayers] = useState<Player[]>(() => Array.from({ length: 5 }, () => emptyPlayer()));

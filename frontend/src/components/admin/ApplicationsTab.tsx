@@ -39,8 +39,8 @@ export function ApplicationsTab({ toast }: Props) {
         body: {
           name: app.team_name,
           abbreviation: app.abbreviation,
-          color_primary: app.color_primary || "#6B21A8",
-          color_accent: app.color_accent || "#A855F7",
+          color_primary: app.color_primary || "#d7a52a",
+          color_accent: app.color_accent || "#d20708",
           logo_url: app.logo_url || null,
           is_active: true,
         },

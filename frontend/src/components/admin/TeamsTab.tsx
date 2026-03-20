@@ -10,7 +10,7 @@ interface Props {
 export function TeamsTab({ seasons, divisions, toast }: Props) {
   const [teams, setTeams] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" });
+  const [form, setForm] = useState({ name: "", abbreviation: "", color_primary: "#d7a52a", color_accent: "#d20708", logo_url: "", division_id: "", season_id: "" });
   const [editing, setEditing] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const logoFileRef = useRef<HTMLInputElement>(null);
@@ -51,7 +51,7 @@ export function TeamsTab({ seasons, divisions, toast }: Props) {
     try {
       if (editing) { await db(`teams?id=eq.${editing}`, { method: "PATCH", body }); toast("Team updated", "success"); }
       else { await db("teams", { method: "POST", body }); toast("Team created", "success"); }
-      setForm({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" });
+      setForm({ name: "", abbreviation: "", color_primary: "#d7a52a", color_accent: "#d20708", logo_url: "", division_id: "", season_id: "" });
       setEditing(null); load();
     } catch (e: any) { toast(e.message, "error"); }
   };
@@ -64,12 +64,12 @@ export function TeamsTab({ seasons, divisions, toast }: Props) {
 
   const edit = (t: any) => {
     setEditing(t.id);
-    setForm({ name: t.name, abbreviation: t.abbreviation, color_primary: t.color_primary || "#6B21A8", color_accent: t.color_accent || "#A855F7", logo_url: t.logo_url || "", division_id: t.division_id || "", season_id: t.season_id || "" });
+    setForm({ name: t.name, abbreviation: t.abbreviation, color_primary: t.color_primary || "#d7a52a", color_accent: t.color_accent || "#d20708", logo_url: t.logo_url || "", division_id: t.division_id || "", season_id: t.season_id || "" });
   };
 
   const resetForm = () => {
     setEditing(null);
-    setForm({ name: "", abbreviation: "", color_primary: "#6B21A8", color_accent: "#A855F7", logo_url: "", division_id: "", season_id: "" });
+    setForm({ name: "", abbreviation: "", color_primary: "#d7a52a", color_accent: "#d20708", logo_url: "", division_id: "", season_id: "" });
   };
 
   return (
