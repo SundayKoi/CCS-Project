@@ -22,19 +22,15 @@ export function TwitterFeedSection({ feeds }: Props) {
     .filter((f) => f.is_active)
     .sort((a, b) => a.sort_order - b.sort_order);
 
-  if (activeFeeds.length === 0) return null;
-
   const timelines = activeFeeds.filter(f => f.feed_type === "timeline" && f.handle);
   const tweets = activeFeeds.filter(f => f.feed_type === "tweet" && f.tweet_url);
+  const hasFeeds = activeFeeds.length > 0;
 
   return (
     <div className="bg-bg2 rounded-lg border border-border overflow-hidden">
-      <div className="px-4 py-3.5 border-b border-border flex items-center gap-2">
-        <svg viewBox="0 0 24 24" className="w-4 h-4 text-text-muted" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
+      <div className="px-4 py-3.5 border-b border-border">
         <span className="font-display text-[15px] text-text-bright tracking-widest">
-          FOLLOW US ON X
+          SOCIALS
         </span>
       </div>
       <div className="flex flex-col gap-3 p-4">
@@ -95,6 +91,29 @@ export function TwitterFeedSection({ feeds }: Props) {
             </a>
           );
         })}
+
+        {/* YouTube */}
+        <a
+          href="https://www.youtube.com/channel/UCGqyv9sQMj655WFm2NvSGzQ"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 bg-bg3 rounded-lg p-4 border border-border hover:border-ccs-red/40 transition-colors no-underline group"
+        >
+          <div className="w-12 h-12 rounded-full bg-ccs-red/20 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-6 h-6 text-ccs-red" fill="currentColor">
+              <path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 00.5 6.19 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.81 3.02 3.02 0 002.12 2.14c1.88.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 002.12-2.14A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-heading text-sm text-text-bright font-medium group-hover:text-ccs-red transition-colors">
+              CCS on YouTube
+            </div>
+            <div className="text-text-secondary text-xs mt-0.5">Watch VODs & highlights</div>
+          </div>
+          <div className="bg-ccs-red text-white text-xs font-heading font-medium px-4 py-2 rounded-full tracking-wider uppercase shrink-0 group-hover:opacity-90 transition-opacity">
+            Subscribe
+          </div>
+        </a>
       </div>
     </div>
   );
