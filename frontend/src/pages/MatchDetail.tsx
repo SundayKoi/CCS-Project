@@ -34,7 +34,7 @@ interface Game {
   match_id: string;
   game_number: number;
   winner_team_id: string | null;
-  duration_seconds: number | null;
+  game_duration: number | null;
   game_started_at: string | null;
   mvp_player_id: string | null;
 }
@@ -48,10 +48,13 @@ interface PlayerStat {
   kills: number;
   deaths: number;
   assists: number;
-  cs: number;
+  total_minions_killed: number;
+  neutral_minions_killed: number;
   vision_score: number;
-  damage_dealt: number;
+  total_damage_dealt_to_champions: number;
   gold_earned: number;
+  is_mvp: boolean;
+  win: boolean;
   players: { display_name: string; riot_game_name: string } | null;
 }
 
@@ -244,7 +247,7 @@ export default function MatchDetail() {
               <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-bg3">
                 <div className="flex items-center gap-3">
                   <span className="font-display text-sm text-text-bright tracking-widest">GAME {i + 1}</span>
-                  <span className="text-text-muted text-xs font-mono">{formatDuration(game.duration_seconds)}</span>
+                  <span className="text-text-muted text-xs font-mono">{formatDuration(game.game_duration)}</span>
                 </div>
                 {game.winner_team_id && (
                   <div className="flex items-center gap-2">
@@ -302,7 +305,7 @@ export default function MatchDetail() {
                   <tbody>
                     {/* Blue team */}
                     {blueStats.map(s => {
-                      const isMvp = game.mvp_player_id === s.player_id;
+                      const isMvp = s.is_mvp;
                       const playerName = s.players?.display_name || s.players?.riot_game_name || "Unknown";
                       return (
                         <tr
@@ -319,9 +322,9 @@ export default function MatchDetail() {
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.kills}</td>
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.deaths}</td>
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.assists}</td>
-                          <td className="px-2 py-2 text-center font-mono text-xs">{s.cs}</td>
+                          <td className="px-2 py-2 text-center font-mono text-xs">{(s.total_minions_killed || 0) + (s.neutral_minions_killed || 0)}</td>
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.vision_score}</td>
-                          <td className="px-2 py-2 text-right font-mono text-xs">{s.damage_dealt?.toLocaleString() ?? 0}</td>
+                          <td className="px-2 py-2 text-right font-mono text-xs">{(s.total_damage_dealt_to_champions || 0).toLocaleString()}</td>
                           <td className="px-4 py-2 text-right font-mono text-xs">{s.gold_earned?.toLocaleString() ?? 0}</td>
                         </tr>
                       );
@@ -334,7 +337,7 @@ export default function MatchDetail() {
 
                     {/* Red team */}
                     {redStats.map(s => {
-                      const isMvp = game.mvp_player_id === s.player_id;
+                      const isMvp = s.is_mvp;
                       const playerName = s.players?.display_name || s.players?.riot_game_name || "Unknown";
                       return (
                         <tr
@@ -351,9 +354,9 @@ export default function MatchDetail() {
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.kills}</td>
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.deaths}</td>
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.assists}</td>
-                          <td className="px-2 py-2 text-center font-mono text-xs">{s.cs}</td>
+                          <td className="px-2 py-2 text-center font-mono text-xs">{(s.total_minions_killed || 0) + (s.neutral_minions_killed || 0)}</td>
                           <td className="px-2 py-2 text-center font-mono text-xs">{s.vision_score}</td>
-                          <td className="px-2 py-2 text-right font-mono text-xs">{s.damage_dealt?.toLocaleString() ?? 0}</td>
+                          <td className="px-2 py-2 text-right font-mono text-xs">{(s.total_damage_dealt_to_champions || 0).toLocaleString()}</td>
                           <td className="px-4 py-2 text-right font-mono text-xs">{s.gold_earned?.toLocaleString() ?? 0}</td>
                         </tr>
                       );
