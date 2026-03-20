@@ -8,7 +8,7 @@ interface Props {
   isMobile: boolean;
 }
 
-const TABS = ["Home", "Scores", "Schedule", "Standings", "Stats", "Teams", "Players"];
+const TABS = ["Home", "Scores", "Schedule", "Standings", "Stats", "Teams", "Draft Board"];
 
 export function NavBar({ active, setActive, isMobile }: Props) {
   const [open, setOpen] = useState(false);

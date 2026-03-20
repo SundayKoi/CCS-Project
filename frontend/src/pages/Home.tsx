@@ -16,7 +16,7 @@ import { ScoresView } from "../components/views/ScoresView";
 import { ScheduleView } from "../components/views/ScheduleView";
 import { StandingsView } from "../components/views/StandingsView";
 import { TeamsView } from "../components/views/TeamsView";
-import { PlayersView } from "../components/views/PlayersView";
+import { DraftBoard } from "../components/views/DraftBoard";
 
 export default function Home() {
   const [tab, setTab] = useState("Home");
@@ -80,7 +80,7 @@ export default function Home() {
           : tab === "Schedule" ? <ScheduleView matches={matches} isMobile={isMobile} />
           : tab === "Standings" ? <StandingsView standings={standings} teams={teams} matches={matches} games={games} isMobile={isMobile} />
           : tab === "Teams" ? <TeamsView teams={teams} standings={standings} rosters={rosters} isMobile={isMobile} />
-          : tab === "Players" ? <PlayersView players={players} isMobile={isMobile} />
+          : tab === "Draft Board" ? <DraftBoard isMobile={isMobile} />
           : (
             <div className={`grid ${isMobile ? "grid-cols-1" : isTablet ? "grid-cols-1" : "grid-cols-[280px_1fr_280px]"}`} style={{ gap: isMobile ? 16 : 24 }}>
               {/* LEFT COLUMN — Articles + Twitter */}

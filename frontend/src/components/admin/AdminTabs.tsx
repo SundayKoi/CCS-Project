@@ -3,7 +3,7 @@ interface Props {
   setActive: (tab: string) => void;
 }
 
-const TABS = ["Teams", "Players", "Rosters", "Schedule", "Applications", "Articles", "Twitter", "Twitch", "Divisions", "Seasons"];
+const TABS = ["Teams", "Players", "Rosters", "Schedule", "Draft Board", "Applications", "Articles", "Twitter", "Twitch", "Divisions", "Seasons"];
 
 export function AdminTabs({ active, setActive }: Props) {
   return (

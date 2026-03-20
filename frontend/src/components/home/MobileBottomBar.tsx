@@ -8,7 +8,7 @@ const ITEMS = [
   { k: "Scores", i: "📋" },
   { k: "Standings", i: "🏆" },
   { k: "Stats", i: "📊" },
-  { k: "Teams", i: "⚔️" },
+  { k: "Draft Board", i: "📝" },
 ];
 
 export function MobileBottomBar({ active, setActive }: Props) {
