@@ -81,16 +81,19 @@ export function StandingsView({ standings, teams, matches, games, isMobile }: Pr
               // Tier separator: thick line between playoff tiers
               const tierBreaks = [1, 3, 4, 5, 6]; // after these positions
               const showTierBreak = tierBreaks.includes(groupPos);
+              const rowBg = groupPos === 1 ? "rgba(215,165,42,0.12)" : groupPos <= 3 ? "rgba(63,0,8,0.25)" : "rgba(1,1,1,0.4)";
+              const rowBorder = groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#3f0008" : "#010101";
+              const numColor = groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#d20708" : "#666";
               return (
                 <tr
                   key={s.id}
                   style={{
-                    borderLeft: scenario ? `4px solid ${scenario.borderColor}` : undefined,
-                    background: scenario ? scenario.bgColor : undefined,
-                    borderBottom: showTierBreak ? `2px solid ${scenario?.borderColor || "var(--border)"}` : undefined,
+                    borderLeft: `4px solid ${rowBorder}`,
+                    background: rowBg,
+                    borderBottom: showTierBreak ? `2px solid ${rowBorder}` : undefined,
                   }}
                 >
-                  <td className="px-3.5 py-3.5 font-display text-lg" style={{ color: groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#3f0008" : "#010101" }}>{pos}</td>
+                  <td className="px-3.5 py-3.5 font-display text-lg" style={{ color: numColor }}>{pos}</td>
                   <td className="px-3.5 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <TeamBadge team={t} size={28} />

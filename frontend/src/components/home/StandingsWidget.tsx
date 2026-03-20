@@ -83,19 +83,22 @@ export function StandingsWidget({ standings, teams, matches, games }: Props) {
             const scenario = getPlayoffScenario(groupPos);
             const tierBreaks = [1, 3, 4, 5, 6];
             const showTierBreak = tierBreaks.includes(groupPos);
+            const rowBg = groupPos === 1 ? "rgba(215,165,42,0.12)" : groupPos <= 3 ? "rgba(63,0,8,0.25)" : "rgba(1,1,1,0.4)";
+            const rowBorder = groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#3f0008" : "#010101";
+            const numColor = groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#d20708" : "#666";
             return (
               <tr
                 key={s.id}
                 className="cursor-pointer"
                 style={{
-                  borderLeft: scenario ? `4px solid ${scenario.borderColor}` : undefined,
-                  background: scenario ? scenario.bgColor : undefined,
-                  borderBottom: showTierBreak ? `2px solid ${scenario?.borderColor || "var(--border)"}` : undefined,
+                  borderLeft: `4px solid ${rowBorder}`,
+                  background: rowBg,
+                  borderBottom: showTierBreak ? `2px solid ${rowBorder}` : undefined,
                 }}
               >
                 <td className="px-3.5 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono min-w-[14px] text-right font-bold" style={{ color: groupPos === 1 ? "#d7a52a" : groupPos <= 3 ? "#3f0008" : "#010101" }}>{pos}</span>
+                    <span className="text-[10px] font-mono min-w-[14px] text-right font-bold" style={{ color: numColor }}>{pos}</span>
                     <TeamBadge team={t} />
                     <div className="flex flex-col min-w-0">
                       <span className="font-heading text-[13px] text-text font-medium">{t.name}</span>
