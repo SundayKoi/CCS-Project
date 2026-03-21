@@ -68,17 +68,19 @@ export function NavBar({ active, setActive, isMobile }: Props) {
           CCS
         </span>
       </div>
-      {TABS.map(t => (
-        <button
-          key={t}
-          onClick={() => setActive(t)}
-          className={`bg-transparent cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase border-0 ${
-            active === t ? "text-text-bright font-bold border-b-2 border-b-accent" : "text-text-secondary font-normal border-b-2 border-b-transparent"
-          }`}
-        >
-          {t}
-        </button>
-      ))}
+      <div className="flex-1 flex justify-center items-center">
+        {TABS.map(t => (
+          <button
+            key={t}
+            onClick={() => setActive(t)}
+            className={`bg-transparent cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase border-0 ${
+              active === t ? "text-text-bright font-bold border-b-2 border-b-accent" : "text-text-secondary font-normal border-b-2 border-b-transparent"
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
       <div className="ml-auto">
         <ThemeToggle />
       </div>
