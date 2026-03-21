@@ -357,7 +357,7 @@ export function DraftBoard({ isMobile }: Props) {
           {filtered.map(listing => listing.listing_type === "team_lft" ? (
             <div key={listing.id} className="bg-bg2 border border-border rounded-lg overflow-hidden p-4 flex flex-col gap-2.5">
               <div className="flex items-center gap-3">
-                <TeamBadge team={listing.teams} size={36} />
+                {listing.teams?.logo_url && <TeamBadge team={listing.teams} size={36} />}
                 <div className="flex-1 min-w-0">
                   <div className="font-heading text-sm text-text-bright font-semibold truncate">
                     {listing.teams?.name || listing.team_name || "Unknown"} {listing.teams?.abbreviation && <span className="text-text-muted font-normal">({listing.teams.abbreviation})</span>}
