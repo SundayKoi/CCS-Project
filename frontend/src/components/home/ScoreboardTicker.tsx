@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { TeamBadge } from "../TeamBadge";
 import { fmtTime } from "../../lib/utils";
 import type { Match } from "../../hooks/useLeagueData";
@@ -17,12 +18,10 @@ export function ScoreboardTicker({ matches, isMobile }: Props) {
           const r = m.team_red || {} as any;
           const isLive = m.status === "live";
           const isFinal = m.status === "completed";
-          return (
-            <div
-              key={m.id}
-              className={`flex flex-col shrink-0 cursor-pointer ${isLive ? "border-l-[3px] border-l-ccs-red bg-ccs-red/5" : ""} ${i < matches.length - 1 ? "border-r border-border" : ""}`}
-              style={{ minWidth: isMobile ? 150 : 180, padding: isMobile ? "8px 12px" : "10px 16px" }}
-            >
+          const cardClass = `flex flex-col shrink-0 cursor-pointer ${isLive ? "border-l-[3px] border-l-ccs-red bg-ccs-red/5" : ""} ${i < matches.length - 1 ? "border-r border-border" : ""} ${isFinal ? "hover:bg-bg3/30 transition-colors" : ""}`;
+          const cardStyle = { minWidth: isMobile ? 150 : 180, padding: isMobile ? "8px 12px" : "10px 16px" };
+          const cardContent = (
+            <>
               {isLive ? (
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-ccs-red shadow-[0_0_10px_var(--red),0_0_20px_var(--red)]" style={{ animation: "pulse 1.5s infinite" }} />
@@ -52,6 +51,16 @@ export function ScoreboardTicker({ matches, isMobile }: Props) {
                   </span>
                 </div>
               ))}
+            </>
+          );
+
+          return isFinal ? (
+            <Link key={m.id} to={`/match/${m.id}`} className={cardClass + " no-underline"} style={cardStyle}>
+              {cardContent}
+            </Link>
+          ) : (
+            <div key={m.id} className={cardClass} style={cardStyle}>
+              {cardContent}
             </div>
           );
         })}
