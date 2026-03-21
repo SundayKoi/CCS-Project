@@ -363,9 +363,6 @@ export function DraftBoard({ isMobile }: Props) {
                     {listing.teams?.name || listing.team_name || "Unknown"} {listing.teams?.abbreviation && <span className="text-text-muted font-normal">({listing.teams.abbreviation})</span>}
                   </div>
                 </div>
-                <div className="shrink-0 text-[12px] font-mono text-text-secondary bg-bg3 rounded px-2 py-0.5">
-                  {listing.teams ? (rosterCounts[listing.teams.id] || 0) : 0}/5
-                </div>
               </div>
               {listing.roles_needed && listing.roles_needed.length > 0 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
