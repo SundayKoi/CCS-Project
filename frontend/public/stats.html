@@ -472,7 +472,23 @@ body.embedded .hdr{padding-top:16px}
   <div class="tab-page" id="pg-teams"><div class="card"><div class="card-t">Team Standings</div><div class="card-s">Win/Loss Records & Team Stats</div><div id="teamGrid" class="team-grid"></div></div></div>
   <div class="tab-page" id="pg-champions"><div class="card"><div class="card-t">Champion Statistics</div><div class="card-s">League-wide champion performance</div><div id="champContent"></div></div></div>
   <div class="tab-page" id="pg-records"><div class="card"><div class="card-t">League Records</div><div class="card-s">All-time single-game records</div><div id="recordsGrid" class="records-grid"></div></div></div>
-  <div class="tab-page" id="pg-scouting"><div class="card"><div class="card-t">Player Scouting Report</div><div class="card-s">Deep-dive analytics with laning, team impact, and advanced stats</div><div class="scout-search"><input type="text" id="scoutInput" placeholder="Type a player name..." oninput="onScoutSearch(this.value)"><button class="scout-btn primary" onclick="runScoutReport()">GENERATE REPORT</button></div><div class="scout-suggestions" id="scoutSuggestions"></div><div id="scoutReport" class="scout-profile"></div></div></div>
+  <div class="tab-page" id="pg-scouting"><div class="card">
+    <div class="card-t">Scouting Report</div>
+    <div class="card-s">Deep-dive analytics with laning, team impact, and advanced stats</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button id="scoutModePlayer" class="scout-btn primary" onclick="setScoutMode('player')" style="font-size:12px">Player</button>
+      <button id="scoutModeTeam" class="scout-btn" onclick="setScoutMode('team')" style="font-size:12px">Team</button>
+    </div>
+    <div id="scoutPlayerPanel">
+      <div class="scout-search"><input type="text" id="scoutInput" placeholder="Type a player name..." oninput="onScoutSearch(this.value)"><button class="scout-btn primary" onclick="runScoutReport()">GENERATE REPORT</button></div>
+      <div class="scout-suggestions" id="scoutSuggestions"></div>
+      <div id="scoutReport" class="scout-profile"></div>
+    </div>
+    <div id="scoutTeamPanel" style="display:none">
+      <div class="scout-search"><select id="scoutTeamSelect" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Source Sans 3',sans-serif;font-size:14px;padding:10px 14px"><option value="">Select a team...</option></select><button class="scout-btn primary" onclick="runTeamScout()">GENERATE REPORT</button></div>
+      <div id="scoutTeamReport" class="scout-profile"></div>
+    </div>
+  </div></div>
   <div class="tab-page" id="pg-lookup">
     <div class="card">
       <div class="card-t">Player Lookup</div>
@@ -922,6 +938,159 @@ function copyScoutReportFull(playerName){
   laning+='   CS Adv: +'+colAvg('Max CS Advantage on Lane Opponent').toFixed(1)+' | Lvl Lead: +'+colAvg('Max Level Lead on Lane Opponent').toFixed(1)+'\n';
   laning+='   Solo Kills/Game: '+colAvg('Solo Kills').toFixed(1)+'\n';
   navigator.clipboard.writeText(report+'\n'+laning).then(function(){showScoutToast('Full scouting report copied!')});
+}
+
+// ═══ SCOUT MODE TOGGLE ═══
+var _scoutMode='player';
+function setScoutMode(mode){
+  _scoutMode=mode;
+  document.getElementById('scoutPlayerPanel').style.display=mode==='player'?'':'none';
+  document.getElementById('scoutTeamPanel').style.display=mode==='team'?'':'none';
+  document.getElementById('scoutModePlayer').className=mode==='player'?'scout-btn primary':'scout-btn';
+  document.getElementById('scoutModeTeam').className=mode==='team'?'scout-btn primary':'scout-btn';
+  if(mode==='team')populateTeamSelect();
+}
+function populateTeamSelect(){
+  var sel=document.getElementById('scoutTeamSelect');
+  var teams={};PD.forEach(function(p){if(p.team)teams[p.team]=true});
+  var html='<option value="">Select a team...</option>';
+  Object.keys(teams).sort().forEach(function(t){
+    html+='<option value="'+t+'">'+t+'</option>';
+  });
+  sel.innerHTML=html;
+}
+function runTeamScout(){
+  var teamName=document.getElementById('scoutTeamSelect').value;
+  if(!teamName)return;
+  var el=document.getElementById('scoutTeamReport');
+  var rows=getFilteredRows();
+  var teamPlayers=PD.filter(function(p){return p.team===teamName});
+  if(!teamPlayers.length){el.innerHTML='<div class="nodata">No players found for '+teamName+'</div>';el.classList.add('active');return}
+  var tc=TC[teamName]||'var(--accent)';var ta=TA[teamName]||tc;
+  var teamRows=rows.filter(function(r){return(r['Teams']||'').trim()===teamName});
+  var totalGames=0;var totalWins=0;var matchIds={};
+  teamRows.forEach(function(r){var mid=r['Match ID']||'';if(!matchIds[mid]){matchIds[mid]=true;totalGames++;if(String(r['Win'])==='true'||r['Win']===true||r['Win']==='Yes')totalWins++}});
+  // Actually count properly - each player has a row per game, check wins
+  var gameWins={};teamRows.forEach(function(r){var gid=r['Match ID']||r['Game ID']||'';if(!gameWins[gid]){gameWins[gid]=(String(r['Win'])==='true'||r['Win']===true||r['Win']==='Yes')}});
+  var gamesPlayed=Object.keys(gameWins).length;
+  var wins=Object.values(gameWins).filter(function(w){return w}).length;
+  var losses=gamesPlayed-wins;
+  var winRate=gamesPlayed>0?Math.round(wins/gamesPlayed*100):0;
+  function teamAvg(col){var vals=teamRows.map(function(r){return parseFloat(r[col])||0});return vals.length?vals.reduce(function(s,v){return s+v},0)/vals.length:0}
+  function teamSum(col){return teamRows.reduce(function(s,r){return s+(parseFloat(r[col])||0)},0)}
+  var h='';
+  // Header
+  h+='<div class="scout-header"><div>';
+  h+='<div class="scout-name" style="background:linear-gradient(90deg,'+tc+','+ta+');-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+teamName.toUpperCase()+'</div>';
+  h+='<div class="scout-sub">'+wins+'W - '+losses+'L · '+winRate+'% WR · '+gamesPlayed+' Games</div>';
+  h+='</div><div class="scout-actions">';
+  h+='<button class="scout-btn primary" onclick="copyTeamScout(\''+teamName.replace(/'/g,"\\'")+'\')">Copy Report</button>';
+  h+='</div></div>';
+  h+='<div class="scout-grid">';
+  // Team averages
+  h+='<div class="scout-card"><div class="scout-card-title">Team Averages (Per Game)</div>';
+  var tKills=teamAvg('Kills');var tDeaths=teamAvg('Deaths');var tAssists=teamAvg('Assists');
+  var tKDA=(tDeaths>0)?(tKills+tAssists)/tDeaths:tKills+tAssists;
+  h+='<div class="scout-row"><span class="scout-row-label">Team KDA</span><span class="scout-row-val" style="color:'+(tKDA>=3?'var(--green)':tKDA>=2?'var(--text)':'var(--red)')+'">'+tKDA.toFixed(2)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Avg Kills</span><span class="scout-row-val">'+(tKills*5).toFixed(1)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Avg Deaths</span><span class="scout-row-val">'+(tDeaths*5).toFixed(1)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Avg Game Duration</span><span class="scout-row-val">'+teamAvg('Game Duration (min)').toFixed(1)+' min</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Avg Gold/Min</span><span class="scout-row-val">'+teamAvg('Gold/min').toFixed(0)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Avg DMG/Min</span><span class="scout-row-val">'+teamAvg('Damage/min').toFixed(0)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Avg Vision/Game</span><span class="scout-row-val">'+teamAvg('Vision Score').toFixed(1)+'</span></div>';
+  h+='</div>';
+  // Objectives
+  h+='<div class="scout-card"><div class="scout-card-title">Objectives (Per Game)</div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Dragons</span><span class="scout-row-val">'+teamAvg('Dragons').toFixed(1)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Barons</span><span class="scout-row-val">'+teamAvg('Barons').toFixed(1)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Towers</span><span class="scout-row-val">'+teamAvg('Turret Kills').toFixed(1)+'</span></div>';
+  h+='<div class="scout-row"><span class="scout-row-label">Grubs</span><span class="scout-row-val">'+teamAvg('Void Grubs').toFixed(1)+'</span></div>';
+  var fbRate=teamRows.filter(function(r){return r['First Blood Kill']==='Yes'}).length/Math.max(teamRows.length,1)*100;
+  h+='<div class="scout-row"><span class="scout-row-label">First Blood Rate</span><span class="scout-row-val" style="color:'+(fbRate>=50?'var(--green)':'var(--red)')+'">'+fbRate.toFixed(0)+'%</span></div>';
+  var ftRate=teamRows.filter(function(r){return r['First Turret Killed']==='Yes'}).length/Math.max(teamRows.length,1)*100;
+  h+='<div class="scout-row"><span class="scout-row-label">First Tower Rate</span><span class="scout-row-val" style="color:'+(ftRate>=50?'var(--green)':'var(--red)')+'">'+ftRate.toFixed(0)+'%</span></div>';
+  h+='</div>';
+  // Roster breakdown
+  h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Roster Breakdown</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 60px 60px 50px 50px 50px 60px 70px 70px 60px;gap:4px;padding:4px 0;border-bottom:2px solid var(--border);font-size:9px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">';
+  h+='<div>Player</div><div style="text-align:center">Role</div><div style="text-align:center">Games</div><div style="text-align:center">K/G</div><div style="text-align:center">D/G</div><div style="text-align:center">A/G</div><div style="text-align:center">KDA</div><div style="text-align:center">DMG/Min</div><div style="text-align:center">CS/Min</div><div style="text-align:center">WR</div></div>';
+  var roleOrder=['Top','Jng','Mid','ADC','Sup'];
+  teamPlayers.sort(function(a,b){var ai=roleOrder.indexOf(a.mainRole);var bi=roleOrder.indexOf(b.mainRole);if(ai===-1)ai=99;if(bi===-1)bi=99;return ai-bi});
+  teamPlayers.forEach(function(p){
+    var rl=ROLE_MAP[p.mainRole]||p.mainRole;
+    var wrColor=p.winRate>=60?'var(--green)':p.winRate>=50?'var(--text)':'var(--red)';
+    var kdaColor=p.kda>=4?'var(--green)':p.kda>=2.5?'var(--text)':'var(--red)';
+    h+='<div style="display:grid;grid-template-columns:1fr 60px 60px 50px 50px 50px 60px 70px 70px 60px;gap:4px;padding:8px 0;border-bottom:1px solid var(--border);align-items:center;font-size:12px;cursor:pointer" onclick="document.getElementById(\'scoutInput\').value=\''+p.player.replace(/'/g,"\\'")+'\';setScoutMode(\'player\');runScoutReport()">';
+    h+='<div style="font-weight:700">'+p.player+'</div>';
+    h+='<div style="text-align:center;color:var(--text-secondary);font-size:10px">'+rl+'</div>';
+    h+='<div style="text-align:center">'+p.games+'</div>';
+    h+='<div style="text-align:center">'+p.killsPerGame+'</div>';
+    h+='<div style="text-align:center">'+p.deathsPerGame+'</div>';
+    h+='<div style="text-align:center">'+p.assistsPerGame+'</div>';
+    h+='<div style="text-align:center;color:'+kdaColor+'">'+p.kda+'</div>';
+    h+='<div style="text-align:center">'+Math.round(p.damagePerMin)+'</div>';
+    h+='<div style="text-align:center">'+p.csPerMin+'</div>';
+    h+='<div style="text-align:center;color:'+wrColor+'">'+p.winRate+'%</div>';
+    h+='</div>';
+  });
+  h+='<div style="font-size:10px;color:var(--text-secondary);margin-top:6px">Click a player to view their individual scouting report</div>';
+  h+='</div>';
+  // Champion pool across team
+  var teamChamps={};teamPlayers.forEach(function(p){
+    (p.champData||[]).forEach(function(x){
+      if(!teamChamps[x.champ])teamChamps[x.champ]={games:0,wins:0,players:{}};
+      teamChamps[x.champ].games++;if(x.win)teamChamps[x.champ].wins++;
+      teamChamps[x.champ].players[p.player]=true;
+    });
+  });
+  var champList=Object.entries(teamChamps).map(function(e){return{name:e[0],games:e[1].games,wins:e[1].wins,wr:e[1].wins/e[1].games*100,players:Object.keys(e[1].players)}}).sort(function(a,b){return b.games-a.games});
+  if(champList.length){
+    h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Team Champion Pool ('+champList.length+' Champions)</div>';
+    h+='<div style="display:grid;grid-template-columns:32px 1fr 50px 60px 1fr;gap:4px;padding:4px 0;border-bottom:2px solid var(--border);font-size:9px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.5px">';
+    h+='<div></div><div>Champion</div><div style="text-align:center">Games</div><div style="text-align:center">Win Rate</div><div>Played By</div></div>';
+    champList.slice(0,15).forEach(function(ch){
+      var wrColor=ch.wr>=60?'var(--green)':ch.wr>=50?'var(--text)':'var(--red)';
+      h+='<div style="display:grid;grid-template-columns:32px 1fr 50px 60px 1fr;gap:4px;padding:6px 0;border-bottom:1px solid var(--border);align-items:center;font-size:12px">';
+      h+='<div>'+champImg(ch.name,'champ-icon')+'</div>';
+      h+='<div style="font-weight:700">'+ch.name+'</div>';
+      h+='<div style="text-align:center">'+ch.games+'</div>';
+      h+='<div style="text-align:center;color:'+wrColor+'">'+ch.wr.toFixed(0)+'%</div>';
+      h+='<div style="font-size:10px;color:var(--text-secondary)">'+ch.players.join(', ')+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  // Ban history against this team
+  var banData={};teamRows.forEach(function(r){
+    ['Ban 1','Ban 2','Ban 3','Ban 4','Ban 5'].forEach(function(col){
+      var bn=r[col];if(bn&&bn!=='None'&&bn!=='null'){if(!banData[bn])banData[bn]=0;banData[bn]++}
+    });
+  });
+  var banList=Object.entries(banData).sort(function(a,b){return b[1]-a[1]});
+  if(banList.length){
+    h+='<div class="scout-card" style="grid-column:1/-1"><div class="scout-card-title">Bans Targeting '+teamName+'</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    banList.slice(0,10).forEach(function(b){
+      h+='<div style="display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 10px">';
+      h+=champImg(b[0],'champ-icon');
+      h+='<span style="font-weight:700;font-size:12px">'+b[0]+'</span>';
+      h+='<span style="color:var(--text-secondary);font-size:10px">'+b[1]+'x</span>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  }
+  h+='</div>'; // close scout-grid
+  el.innerHTML=h;el.classList.add('active');
+}
+function copyTeamScout(teamName){
+  var teamPlayers=PD.filter(function(p){return p.team===teamName});
+  var rows=getFilteredRows();
+  var teamRows=rows.filter(function(r){return(r['Teams']||'').trim()===teamName});
+  var gameWins={};teamRows.forEach(function(r){var gid=r['Match ID']||'';if(!gameWins[gid])gameWins[gid]=(String(r['Win'])==='true'||r['Win']===true)});
+  var gp=Object.keys(gameWins).length;var w=Object.values(gameWins).filter(Boolean).length;
+  var lines=['=== TEAM SCOUTING REPORT ===',teamName,w+'W - '+(gp-w)+'L · '+(gp>0?Math.round(w/gp*100):0)+'% WR','','ROSTER'];
+  teamPlayers.forEach(function(p){lines.push('  '+p.player+' ('+p.mainRole+') - '+p.games+'g, '+p.kda+' KDA, '+p.winRate+'% WR')});
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){showScoutToast('Team report copied!')});
 }
 
 // ═══ SCOUTING TAB ═══
