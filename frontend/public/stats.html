@@ -1005,9 +1005,10 @@ function runTeamScout(){
   h+='<div class="scout-row"><span class="scout-row-label">Barons</span><span class="scout-row-val">'+teamAvg('Barons').toFixed(1)+'</span></div>';
   h+='<div class="scout-row"><span class="scout-row-label">Towers</span><span class="scout-row-val">'+teamAvg('Turret Kills').toFixed(1)+'</span></div>';
   h+='<div class="scout-row"><span class="scout-row-label">Grubs</span><span class="scout-row-val">'+teamAvg('Void Grubs').toFixed(1)+'</span></div>';
-  var fbRate=teamRows.filter(function(r){return r['First Blood Kill']==='Yes'}).length/Math.max(teamRows.length,1)*100;
+  var fbGames={};var ftGames={};teamRows.forEach(function(r){var gid=r['Match ID']||r['Game ID']||'';if(!fbGames[gid]&&r['First Blood Kill']==='Yes')fbGames[gid]=true;if(!ftGames[gid]&&r['First Turret Killed']==='Yes')ftGames[gid]=true});
+  var fbRate=gamesPlayed>0?Object.keys(fbGames).length/gamesPlayed*100:0;
   h+='<div class="scout-row"><span class="scout-row-label">First Blood Rate</span><span class="scout-row-val" style="color:'+(fbRate>=50?'var(--green)':'var(--red)')+'">'+fbRate.toFixed(0)+'%</span></div>';
-  var ftRate=teamRows.filter(function(r){return r['First Turret Killed']==='Yes'}).length/Math.max(teamRows.length,1)*100;
+  var ftRate=gamesPlayed>0?Object.keys(ftGames).length/gamesPlayed*100:0;
   h+='<div class="scout-row"><span class="scout-row-label">First Tower Rate</span><span class="scout-row-val" style="color:'+(ftRate>=50?'var(--green)':'var(--red)')+'">'+ftRate.toFixed(0)+'%</span></div>';
   h+='</div>';
   // Roster breakdown
@@ -1060,10 +1061,14 @@ function runTeamScout(){
     });
     h+='</div>';
   }
-  // Ban history against this team
-  var banData={};teamRows.forEach(function(r){
+  // Ban history against this team (dedupe: count bans once per game, not per player row)
+  var banData={};var banSeen={};teamRows.forEach(function(r){
+    var gid=r['Match ID']||r['Game ID']||'';
     ['Ban 1','Ban 2','Ban 3','Ban 4','Ban 5'].forEach(function(col){
-      var bn=r[col];if(bn&&bn!=='None'&&bn!=='null'){if(!banData[bn])banData[bn]=0;banData[bn]++}
+      var bn=r[col];if(bn&&bn!=='None'&&bn!=='null'){
+        var key=gid+'_'+col;
+        if(!banSeen[key]){banSeen[key]=true;if(!banData[bn])banData[bn]=0;banData[bn]++}
+      }
     });
   });
   var banList=Object.entries(banData).sort(function(a,b){return b[1]-a[1]});
