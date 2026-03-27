@@ -9,6 +9,7 @@ interface Props {
 }
 
 const TABS = ["Home", "Scores", "Schedule", "Standings", "Stats", "Teams", "Draft Board"];
+const EXTERNAL_LINKS = [{ label: "Merch", href: "#" }];
 
 export function NavBar({ active, setActive, isMobile }: Props) {
   const [open, setOpen] = useState(false);
@@ -51,6 +52,17 @@ export function NavBar({ active, setActive, isMobile }: Props) {
                 {t}
               </button>
             ))}
+            {EXTERNAL_LINKS.map(l => (
+              <a
+                key={l.label}
+                href={l.href}
+                target={l.href !== "#" ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="block w-full text-left bg-transparent border-none cursor-pointer py-3.5 px-5 font-heading text-sm tracking-wider uppercase border-l-[3px] border-l-transparent text-text-secondary no-underline"
+              >
+                {l.label}
+              </a>
+            ))}
             <div className="px-5 py-2.5 border-t border-border">
               <ThemeToggle />
             </div>
@@ -79,6 +91,17 @@ export function NavBar({ active, setActive, isMobile }: Props) {
           >
             {t}
           </button>
+        ))}
+        {EXTERNAL_LINKS.map(l => (
+          <a
+            key={l.label}
+            href={l.href}
+            target={l.href !== "#" ? "_blank" : undefined}
+            rel="noopener noreferrer"
+            className="bg-transparent cursor-pointer py-3.5 px-4 font-heading text-sm tracking-wider whitespace-nowrap uppercase border-b-2 border-b-transparent text-text-secondary no-underline"
+          >
+            {l.label}
+          </a>
         ))}
       </div>
       <div className="ml-auto">
