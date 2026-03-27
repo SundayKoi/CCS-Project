@@ -966,7 +966,7 @@ function runTeamScout(){
   var rows=getFilteredRows();
   var teamPlayers=PD.filter(function(p){return p.team===teamName});
   if(!teamPlayers.length){el.innerHTML='<div class="nodata">No players found for '+teamName+'</div>';el.classList.add('active');return}
-  var tc=TC[teamName]||'var(--accent)';var ta=TA[teamName]||tc;
+  var tc=TC[teamName]||'var(--accent)';var ta=TC2[teamName]||tc;
   var teamRows=rows.filter(function(r){return(r['Teams']||'').trim()===teamName});
   var totalGames=0;var totalWins=0;var matchIds={};
   teamRows.forEach(function(r){var mid=r['Match ID']||'';if(!matchIds[mid]){matchIds[mid]=true;totalGames++;if(String(r['Win'])==='true'||r['Win']===true||r['Win']==='Yes')totalWins++}});
