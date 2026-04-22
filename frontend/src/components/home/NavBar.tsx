@@ -9,7 +9,7 @@ interface Props {
 }
 
 const TABS = ["Home", "Scores", "Schedule", "Standings", "Stats", "Teams", "Draft Board"];
-const EXTERNAL_LINKS = [{ label: "Merch", href: "#" }];
+const EXTERNAL_LINKS = [{ label: "Merch", href: "https://classicchampionshipseries.itemorder.com/shop/sale/" }];
 
 export function NavBar({ active, setActive, isMobile }: Props) {
   const [open, setOpen] = useState(false);

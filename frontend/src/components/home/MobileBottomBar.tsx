@@ -9,7 +9,7 @@ const ITEMS = [
   { k: "Standings", i: "🏆" },
   { k: "Stats", i: "📊" },
   { k: "Draft Board", i: "📝" },
-  { k: "Merch", i: "🛒", href: "#" },
+  { k: "Merch", i: "🛒", href: "https://classicchampionshipseries.itemorder.com/shop/sale/" },
 ];
 
 export function MobileBottomBar({ active, setActive }: Props) {
