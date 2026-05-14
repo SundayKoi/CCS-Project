@@ -112,7 +112,7 @@ export function ArchivePlayers({ conf }: Props) {
           </thead>
           <tbody>
             {filtered.map((p, i) => (
-              <tr key={p.id} className="border-t border-border hover:bg-bg3">
+              <tr key={`${p.id}-${p.role}-${p.team}-${i}`} className="border-t border-border hover:bg-bg3">
                 <td className="py-2.5 px-3 text-text-dim font-mono text-xs">{i + 1}</td>
                 <td className="py-2.5 px-3 font-heading font-bold text-text-bright">{p.name}</td>
                 <td className="py-2.5 px-3">

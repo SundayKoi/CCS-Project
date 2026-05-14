@@ -113,8 +113,8 @@ export function ArchiveTeamDetail({ conf, code, onBack, onSelectMatch }: Props) 
               </tr>
             </thead>
             <tbody>
-              {players.map(p => (
-                <tr key={p.id} className="border-b border-border last:border-b-0">
+              {players.map((p, i) => (
+                <tr key={`${p.id}-${p.role}-${i}`} className="border-b border-border last:border-b-0">
                   <td className="py-2.5 pr-3 font-heading font-bold text-text-bright">{p.name}</td>
                   <td className="text-center py-2.5 px-2 text-[10px] text-text-muted">{p.role}</td>
                   <td className="text-center py-2.5 px-2 font-mono text-xs">{p.games}</td>
