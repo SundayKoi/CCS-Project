@@ -6,6 +6,11 @@ async function get<T>(path: string): Promise<T> {
   return res.json();
 }
 
+async function getList<T>(path: string): Promise<T[]> {
+  const data = await get<T[] | null>(path);
+  return Array.isArray(data) ? data : [];
+}
+
 export interface ArchiveTournament {
   conf: string;
   name: string;
@@ -204,13 +209,13 @@ export interface ArchiveChampionStats {
 }
 
 export const archiveApi = {
-  tournaments: () => get<ArchiveTournament[]>("/tournaments"),
-  teamsForConf: (conf: string) => get<ArchiveTeamSummary[]>(`/teams/${conf}`),
+  tournaments: () => getList<ArchiveTournament>("/tournaments"),
+  teamsForConf: (conf: string) => getList<ArchiveTeamSummary>(`/teams/${conf}`),
   teamDetail: (conf: string, code: string) => get<ArchiveTeamDetail>(`/teams/${conf}/${code}`),
-  playerStats: (conf: string) => get<ArchivePlayerStats[]>(`/stats/players/${conf}`),
-  teamStats: (conf: string) => get<ArchiveTeamStats[]>(`/stats/teams/${conf}`),
-  championStats: (conf: string) => get<ArchiveChampionStats[]>(`/stats/champions/${conf}`),
-  championStatsByRole: (conf: string, role: string) => get<ArchiveChampionStats[]>(`/stats/champions/${conf}/${role}`),
+  playerStats: (conf: string) => getList<ArchivePlayerStats>(`/stats/players/${conf}`),
+  teamStats: (conf: string) => getList<ArchiveTeamStats>(`/stats/teams/${conf}`),
+  championStats: (conf: string) => getList<ArchiveChampionStats>(`/stats/champions/${conf}`),
+  championStatsByRole: (conf: string, role: string) => getList<ArchiveChampionStats>(`/stats/champions/${conf}/${role}`),
   matchData: (matchId: string) => get<unknown>(`/m/${matchId}`),
 };
 

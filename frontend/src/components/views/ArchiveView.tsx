@@ -23,17 +23,37 @@ export function ArchiveView() {
   const [view, setView] = useState<View>({ kind: "list", tab: "Teams" });
 
   useEffect(() => {
+    let cancelled = false;
     archiveApi.tournaments()
-      .then(data => {
+      .then(async data => {
+        if (cancelled) return;
         setTournaments(data);
-        if (data.length > 0) {
-          const ccsTourneys = data.filter(t => t.name.toLowerCase().includes("ccs"));
-          const pool = ccsTourneys.length > 0 ? ccsTourneys : data;
-          setConf(pool[pool.length - 1].conf);
+        if (data.length === 0) {
+          setLoading(false);
+          return;
+        }
+        // Walk tournaments from most recent backwards, picking the first one with data.
+        for (let i = data.length - 1; i >= 0; i--) {
+          if (cancelled) return;
+          try {
+            const stats = await archiveApi.teamStats(data[i].conf);
+            if (stats.length > 0) {
+              if (!cancelled) setConf(data[i].conf);
+              break;
+            }
+          } catch {
+            // skip and try previous
+          }
+        }
+        // Fallback: if nothing had data, just pick the last
+        if (!cancelled) {
+          setConf(prev => prev || data[data.length - 1].conf);
+          setLoading(false);
         }
       })
-      .catch(e => setErr(String(e)))
-      .finally(() => setLoading(false));
+      .catch(e => { if (!cancelled) setErr(String(e)); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const onConfChange = (c: string) => {

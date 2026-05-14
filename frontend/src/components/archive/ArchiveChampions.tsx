@@ -36,6 +36,7 @@ export function ArchiveChampions({ conf }: Props) {
 
   if (loading) return <div className="text-center py-10 text-text-subtle">Loading champions...</div>;
   if (err) return <div className="text-center py-10 text-ccs-red">{err}</div>;
+  if (sorted.length === 0) return <div className="text-center py-10 text-text-dim">No champion data yet for this tournament.</div>;
 
   return (
     <div>
