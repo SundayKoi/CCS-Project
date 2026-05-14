@@ -28,9 +28,13 @@ export function ArchiveChampions({ conf }: Props) {
 
   const sorted = useMemo(() => {
     return [...champs].sort((a, b) => {
-      const av = parseFloat(String(a[sortKey] ?? "0"));
-      const bv = parseFloat(String(b[sortKey] ?? "0"));
-      return bv - av;
+      const aRaw = a[sortKey];
+      const bRaw = b[sortKey];
+      const av = typeof aRaw === "number" ? aRaw : parseFloat(String(aRaw ?? "0"));
+      const bv = typeof bRaw === "number" ? bRaw : parseFloat(String(bRaw ?? "0"));
+      const aFinite = isFinite(av) ? av : -1;
+      const bFinite = isFinite(bv) ? bv : -1;
+      return bFinite - aFinite;
     });
   }, [champs, sortKey]);
 

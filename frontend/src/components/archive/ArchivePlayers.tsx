@@ -28,15 +28,22 @@ export function ArchivePlayers({ conf }: Props) {
 
   const filtered = useMemo(() => {
     let rows = players;
-    if (role !== "ALL") rows = rows.filter(p => p.role === role);
+    if (role !== "ALL") {
+      const target = role.toUpperCase();
+      rows = rows.filter(p => String(p.role || "").toUpperCase().trim() === target);
+    }
     if (search) {
       const q = search.toLowerCase();
       rows = rows.filter(p => p.name.toLowerCase().includes(q) || p.team.toLowerCase().includes(q));
     }
     return [...rows].sort((a, b) => {
-      const av = parseFloat(String(a[sortKey] ?? "0"));
-      const bv = parseFloat(String(b[sortKey] ?? "0"));
-      return bv - av;
+      const aRaw = a[sortKey];
+      const bRaw = b[sortKey];
+      const av = typeof aRaw === "number" ? aRaw : parseFloat(String(aRaw ?? "0"));
+      const bv = typeof bRaw === "number" ? bRaw : parseFloat(String(bRaw ?? "0"));
+      const aFinite = isFinite(av) ? av : -1;
+      const bFinite = isFinite(bv) ? bv : -1;
+      return bFinite - aFinite;
     });
   }, [players, role, sortKey, search]);
 
