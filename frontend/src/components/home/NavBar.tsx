@@ -8,7 +8,7 @@ interface Props {
   isMobile: boolean;
 }
 
-const TABS = ["Home", "Scores", "Schedule", "Standings", "Stats", "Teams", "Draft Board"];
+const TABS = ["Home", "Scores", "Schedule", "Standings", "Stats", "Teams", "Draft Board", "Archive"];
 const EXTERNAL_LINKS = [{ label: "Merch", href: "https://classicchampionshipseries.itemorder.com/shop/sale/" }];
 
 export function NavBar({ active, setActive, isMobile }: Props) {
