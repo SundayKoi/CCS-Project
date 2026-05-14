@@ -25,8 +25,9 @@ export function ArchiveView() {
   useEffect(() => {
     let cancelled = false;
     archiveApi.tournaments()
-      .then(async data => {
+      .then(async raw => {
         if (cancelled) return;
+        const data = raw.filter(t => !/\b2026\b/.test(t.name) && !/'26\b/.test(t.shortname));
         setTournaments(data);
         if (data.length === 0) {
           setLoading(false);
